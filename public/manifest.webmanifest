@@ -1,0 +1,21 @@
+{
+  "id": "/",
+  "name": "A World Made of Her",
+  "short_name": "Birthday",
+  "description": "A birthday surprise made with love.",
+  "start_url": "/",
+  "scope": "/",
+  "display": "standalone",
+  "display_override": ["fullscreen", "standalone"],
+  "orientation": "any",
+  "background_color": "#f6e9ec",
+  "theme_color": "#59333f",
+  "icons": [
+    {
+      "src": "/birthday-favicon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any maskable"
+    }
+  ]
+}

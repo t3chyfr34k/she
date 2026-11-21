@@ -1,0 +1,132 @@
+[
+  {
+    "filename": "memories-01.jpg",
+    "mongoId": "6af5894b833cf23170945b22",
+    "placements": [
+      "memories-01"
+    ],
+    "originalUploadName": "",
+    "contentType": "image/jpeg",
+    "width": 2811,
+    "height": 3748,
+    "size": 1084363,
+    "createdAt": "2026-11-12T09:39:23.776Z"
+  },
+  {
+    "filename": "memories-02.jpg",
+    "mongoId": "6af58950833cf23170945b23",
+    "placements": [
+      "memories-02"
+    ],
+    "originalUploadName": "Birthday balloons",
+    "contentType": "image/jpeg",
+    "width": 1284,
+    "height": 1712,
+    "size": 688461,
+    "createdAt": "2026-11-12T09:39:28.996Z"
+  },
+  {
+    "filename": "memories-03.jpg",
+    "mongoId": "6af58956833cf23170945b24",
+    "placements": [
+      "memories-03"
+    ],
+    "originalUploadName": "Birthday cake",
+    "contentType": "image/jpeg",
+    "width": 1170,
+    "height": 1560,
+    "size": 218912,
+    "createdAt": "2026-11-12T09:39:34.594Z"
+  },
+  {
+    "filename": "ribbon.jpg",
+    "mongoId": "6af58b317127a6ed9f17de2d",
+    "placements": [
+      "ribbon"
+    ],
+    "originalUploadName": "A wrapped birthday gift",
+    "contentType": "image/jpeg",
+    "width": 481,
+    "height": 960,
+    "size": 50179,
+    "createdAt": "2026-11-12T09:47:29.532Z"
+  },
+  {
+    "filename": "statement.jpg",
+    "mongoId": "6af58ac87127a6ed9f17de29",
+    "placements": [
+      "statement"
+    ],
+    "originalUploadName": "A birthday treat",
+    "contentType": "image/jpeg",
+    "width": 1170,
+    "height": 1560,
+    "size": 218912,
+    "createdAt": "2026-11-12T09:45:44.379Z"
+  },
+  {
+    "filename": "wall-01.jpg",
+    "mongoId": "6af59feaba3164fe0bf1b307",
+    "placements": [
+      "wall-01"
+    ],
+    "originalUploadName": "808921708_18011023274962040_7743136752287080272_n.jpg",
+    "contentType": "image/jpeg",
+    "width": 1228,
+    "height": 691,
+    "size": 80337,
+    "createdAt": "2026-11-12T11:15:54.809Z"
+  },
+  {
+    "filename": "wall-02.jpg",
+    "mongoId": "6af59feaba3164fe0bf1b308",
+    "placements": [
+      "wall-02"
+    ],
+    "originalUploadName": "WhatsApp Image 2026-11-12 at 2.58.50 PM.jpeg",
+    "contentType": "image/jpeg",
+    "width": 481,
+    "height": 960,
+    "size": 50179,
+    "createdAt": "2026-11-12T11:15:54.984Z"
+  },
+  {
+    "filename": "wall-03.jpg",
+    "mongoId": "6af59febba3164fe0bf1b309",
+    "placements": [
+      "wall-03"
+    ],
+    "originalUploadName": "734934001_17999945552962040_2810822819366650052_n.jpg",
+    "contentType": "image/jpeg",
+    "width": 1284,
+    "height": 1712,
+    "size": 688461,
+    "createdAt": "2026-11-12T11:15:55.174Z"
+  },
+  {
+    "filename": "wall-04.jpg",
+    "mongoId": "6af59febba3164fe0bf1b30a",
+    "placements": [
+      "wall-04"
+    ],
+    "originalUploadName": "748873865_18001688987962040_933094347643760856_n.jpg",
+    "contentType": "image/jpeg",
+    "width": 1170,
+    "height": 1560,
+    "size": 218912,
+    "createdAt": "2026-11-12T11:15:55.477Z"
+  },
+  {
+    "filename": "wall-05.jpg",
+    "mongoId": "6af59febba3164fe0bf1b30b",
+    "placements": [
+      "wall-05"
+    ],
+    "originalUploadName": "729657860_17998238213962040_660415574950043548_n.jpg",
+    "contentType": "image/jpeg",
+    "width": 1253,
+    "height": 1670,
+    "size": 323639,
+    "createdAt": "2026-11-12T11:15:55.722Z"
+  }
+]
