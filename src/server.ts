@@ -1,6 +1,6 @@
 import "./lib/error-capture";
 
-import { consumeLastCapturedError } from "./lib/error-capture";
+import { consumeLastCapturedError, describeError } from "./lib/error-capture";
 import { renderErrorPage } from "./lib/error-page";
 
 type ServerEntry = {
@@ -45,6 +45,10 @@ async function normalizeCatastrophicSsrResponse(response: Response): Promise<Res
   });
 }
 
+function logRequestDiagnostic(details: Record<string, unknown>): void {
+  console.error(`[request-diagnostic] ${JSON.stringify(details)}`);
+}
+
 function isH3SwallowedErrorBody(body: string): boolean {
   try {
     const payload = JSON.parse(body) as { unhandled?: unknown; message?: unknown };
@@ -59,8 +63,20 @@ function isH3SwallowedErrorBody(body: string): boolean {
 // twice and renders garbled.
 export default {
   async fetch(request: Request, env: unknown, ctx: unknown) {
+    const requestId = crypto.randomUUID();
+    const startedAt = Date.now();
+    const url = new URL(request.url);
+    request.signal.addEventListener("abort", () => {
+      logRequestDiagnostic({
+        event: "request_aborted",
+        requestId,
+        method: request.method,
+        path: url.pathname,
+        elapsedMs: Date.now() - startedAt,
+      });
+    }, { once: true });
+
     try {
-      const url = new URL(request.url);
       if (url.pathname === "/health" && request.method === "GET") {
         return Response.json({
           status: "ok",
@@ -71,9 +87,30 @@ export default {
 
       const handler = await getServerEntry();
       const response = await handler.fetch(request, env, ctx);
-      return await normalizeCatastrophicSsrResponse(response);
+      const normalizedResponse = await normalizeCatastrophicSsrResponse(response);
+      if (normalizedResponse.status >= 500) {
+        logRequestDiagnostic({
+          event: "request_failed",
+          requestId,
+          method: request.method,
+          path: url.pathname,
+          status: normalizedResponse.status,
+          elapsedMs: Date.now() - startedAt,
+          requestAborted: request.signal.aborted,
+        });
+      }
+      return normalizedResponse;
     } catch (error) {
-      console.error(error);
+      logRequestDiagnostic({
+        event: "request_exception",
+        requestId,
+        method: request.method,
+        path: url.pathname,
+        status: 500,
+        elapsedMs: Date.now() - startedAt,
+        requestAborted: request.signal.aborted,
+        error: describeError(error),
+      });
       return new Response(renderErrorPage(error), {
         status: 500,
         headers: { "content-type": "text/html; charset=utf-8" },
