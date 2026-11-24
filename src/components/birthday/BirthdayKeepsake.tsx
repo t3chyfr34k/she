@@ -46,7 +46,7 @@ export function BirthdayKeepsake({ content, name }: { content: SiteContent; name
       ctx.lineWidth = 3; ctx.strokeRect(23, 23, 1074, 1354);
       ctx.lineWidth = 1; ctx.strokeRect(31, 31, 1058, 1358);
 
-      ctx.fillStyle = "#283c29"; ctx.textBaseline = "alphabetic"; ctx.font = "bold 15px Georgia"; ctx.textAlign = "left"; ctx.fillText("A WORLD MADE OF HER", 74, 84);
+      ctx.fillStyle = "#283c29"; ctx.textBaseline = "alphabetic"; ctx.font = "bold 15px Georgia"; ctx.textAlign = "left"; ctx.fillText(" ", 74, 84);
       ctx.textAlign = "right"; ctx.fillText("✦  WITH LOVE", 1046, 84);
       drawFlower(ctx, 1007, 161, 18);
       const frame = { x: 290, y: 125, w: 540, h: 442 };
@@ -97,7 +97,7 @@ export function BirthdayKeepsake({ content, name }: { content: SiteContent; name
       <h2 id="keepsake-title" className="mt-2 font-display text-4xl sm:text-6xl">A card to keep <Heart className="inline h-8 w-8 fill-jade text-jade" aria-hidden="true" /></h2>
       <p className="mx-auto mt-4 max-w-xl text-lg text-forest/75">A little piece of today, made for you to keep.</p>
       <article className="birthday-card paper mx-auto mt-8 max-w-2xl border-[5px] border-double border-[#987a37] bg-[#fbfaf3] px-6 py-7 text-[#283c29] shadow-xl sm:px-10 sm:py-9">
-        <header className="flex justify-between gap-2 text-[9px] font-bold tracking-[.16em] sm:text-xs"><span>A WORLD MADE OF HER</span><span>✦ &nbsp; WITH LOVE</span></header>
+        <header className="flex justify-between gap-2 text-[9px] font-bold tracking-[.16em] sm:text-xs"><span> </span><span>✦ &nbsp; WITH LOVE</span></header>
         {photo?.id ? <img src={photoUrl(photo.id)} alt={photo.alt || `Portrait of ${cardName}`} className="mx-auto mt-6 aspect-[1.22] w-[62%] border-[5px] border-double border-[#a5873d] object-cover" draggable={false} /> : <div className="mx-auto mt-6 flex aspect-[1.22] w-[62%] items-center justify-center border-[5px] border-double border-[#a5873d] bg-[#e9eadf] text-5xl">♡</div>}
         <p className="mt-7 text-[10px] font-bold tracking-[.2em] text-[#75602f]">A DAY AS LOVELY AS YOU</p>
         <p className="mt-2 font-display text-3xl font-bold sm:text-5xl">Happy Birthday,</p>

@@ -101,7 +101,7 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
       { name: "theme-color", content: "#59333f" },
       { name: "mobile-web-app-capable", content: "yes" },
       { name: "apple-mobile-web-app-capable", content: "yes" },
-      { name: "apple-mobile-web-app-title", content: "A World Made of Her" },
+      { name: "apple-mobile-web-app-title", content: " " },
       { name: "apple-mobile-web-app-status-bar-style", content: "black-translucent" },
       { property: "og:title", content: "Happy Birthdy" },
       { property: "og:description", content: "A playful 3D birthday card in rose garden colors." },
