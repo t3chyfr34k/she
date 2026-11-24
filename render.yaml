@@ -3,7 +3,7 @@ services:
     name: birthday-page
     runtime: node
     plan: free
-    buildCommand: npm ci && RENDER_NODE_SERVER=true npm run build
+    buildCommand: npm ci --include=dev && RENDER_NODE_SERVER=true npm run build
     startCommand: node .output/server/index.mjs
     healthCheckPath: /health
     envVars:
