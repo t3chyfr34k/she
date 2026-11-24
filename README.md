@@ -47,6 +47,6 @@ For local Cloudflare-runtime preview, run `npm run build` and then `npm run prev
 
 ## Deploy to Render
 
-This app can also be built as Nitro's Node server for Render. Set the Render build command to `RENDER_NODE_SERVER=true npm run build` and the start command to `node .output/server/index.mjs`. Set `HOST=0.0.0.0`; Nitro reads Render's assigned `PORT` automatically. Configure the existing MongoDB and admin secrets in Render's environment settings as usual.
+This app includes a Render Blueprint in `render.yaml`. Create a Blueprint from this repository to use the Node runtime, Render's assigned `PORT`, the production Node build, and `node .output/server/index.mjs` as the start command. The Blueprint configures `/health` as Render's HTTP health check. Enter `MONGODB_URI` and `ADMIN_PASSWORD` in Render when prompted; `SESSION_SECRET` is generated for the service.
 
-Render or an external uptime monitor can request `GET /health`. A healthy response is JSON with `status`, process `uptime` in seconds, and an ISO 8601 `timestamp`. The Node server runtime manages termination signals and graceful shutdown.
+`GET /health` returns JSON with `status`, process `uptime` in seconds, and an ISO 8601 `timestamp`. The endpoint is a lightweight health check and does not connect to MongoDB. Render uses health checks to confirm an instance is serving and restart it if unhealthy. Free web services can still spin down after 15 minutes without inbound traffic; use an external uptime monitor that requests `/health` periodically or choose a paid plan if the service must stay continuously running. The Node server runtime manages termination signals and graceful shutdown.
