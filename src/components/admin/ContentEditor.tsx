@@ -591,7 +591,7 @@ function ValueEditor({ label, value, path, token, onChange, onNotice }: EditorPr
     );
   const long =
     text.length > 90 ||
-    ["body", "message", "intro", "heading", "note", "phrase"].includes(label.toLowerCase());
+    ["body", "message", "intro", "heading", "note", "phrase", "poem"].includes(label.toLowerCase());
   return (
     <label htmlFor={inputId} className="mt-3 block text-xs font-semibold capitalize text-slate-700">
       {label}
@@ -599,7 +599,8 @@ function ValueEditor({ label, value, path, token, onChange, onNotice }: EditorPr
         <textarea
           id={inputId}
           className={fieldClass}
-          rows={3}
+          rows={label.toLowerCase() === "poem" ? 8 : 3}
+          maxLength={label.toLowerCase() === "poem" ? 500 : undefined}
           value={text}
           onChange={(e) => onChange(path, e.target.value)}
         />
@@ -814,11 +815,23 @@ export function ContentEditor({
           <details
             key={key}
             className="mt-4 rounded-xl border border-slate-200 p-3"
-            open={key === "name" || key === "hero" || key === "backgroundVideo"}
+            open={
+              key === "name" || key === "hero" || key === "backgroundVideo" || key === "keepsake"
+            }
           >
             <summary className="cursor-pointer font-bold capitalize text-forest-deep">
-              {key === "backgroundVideo" ? "Background video" : key}
+              {key === "backgroundVideo"
+                ? "Background video"
+                : key === "keepsake"
+                  ? "Birthday keepsake card (poem and message)"
+                  : key}
             </summary>
+            {key === "keepsake" && (
+              <p className="mt-2 text-sm text-slate-600">
+                Edit the poem shown on the birthday keepsake card below. Keep it within 500
+                characters, then select Save changes.
+              </p>
+            )}
             <ValueEditor
               label={key}
               value={(draft as unknown as Record<string, unknown>)[key]}
