@@ -816,7 +816,11 @@ export function ContentEditor({
             key={key}
             className="mt-4 rounded-xl border border-slate-200 p-3"
             open={
-              key === "name" || key === "hero" || key === "backgroundVideo" || key === "keepsake"
+              key === "name" ||
+              key === "hero" ||
+              key === "backgroundVideo" ||
+              key === "keepsake" ||
+              key === "letter"
             }
           >
             <summary className="cursor-pointer font-bold capitalize text-forest-deep">
@@ -824,12 +828,20 @@ export function ContentEditor({
                 ? "Background video"
                 : key === "keepsake"
                   ? "Birthday keepsake card (poem and message)"
-                  : key}
+                  : key === "letter"
+                    ? "Birthday letter (heading and full message)"
+                    : key}
             </summary>
             {key === "keepsake" && (
               <p className="mt-2 text-sm text-slate-600">
                 Edit the poem shown on the birthday keepsake card below. Keep it within 500
                 characters, then select Save changes.
+              </p>
+            )}
+            {key === "letter" && (
+              <p className="mt-2 text-sm text-slate-600">
+                Edit the text shown in the “To My Forever Kid” letter, including its heading,
+                description, message paragraphs, and sign-off. Save changes to publish.
               </p>
             )}
             <ValueEditor

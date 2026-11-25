@@ -41,6 +41,7 @@ export type SiteContent = {
   wishes: { title: string; highlight: string; intro: string; items: Wish[] };
   statement: { heading: string; big: string; coinTop: string; coinBottom: string; note: string; photo: Photo };
   finale: { greeting: string; title: string; highlight: string; message: string; button: string; buttonDone: string; watermark: string; footer: string };
+  letter: { kicker: string; title: string; description: string; paragraphs: string[]; signature: string };
   keepsake: { enabled: boolean; photo: Photo; wish: string; poem: string; signature: string };
   birthdayAudio: BirthdayAudio;
   backgroundVideo: BackgroundVideo;
@@ -128,6 +129,21 @@ export const DEFAULT_CONTENT: SiteContent = {
     watermark: "Semma B-day",
     footer: "Anboda senjadhu",
   },
+  letter: {
+    kicker: "From one hackathon to family",
+    title: "To My Forever Kid",
+    description: "A birthday thank-you for the sister I found by chance.",
+    paragraphs: [
+      "Funny how one random hackathon brought us together, and somehow, we ended up becoming this close. Who would've thought that an event where we were just two people who happened to cross paths would eventually give me a sister I never knew I needed? I never expected to find someone who would become such an important part of my life through something so random, but I'm genuinely glad it happened.",
+      "I don't think I've ever properly thanked you for all the little things you've done. Thank you for listening to my endless problems, tolerating my nonsense, hearing me out even when I struggle to put my thoughts into words, and putting up with all my random calls and conversations. Thank you for being someone I can talk to without having to think twice about what I'm going to say. There have been days when I had a lot going on in my head, and simply having someone who would listen made things feel a little easier. You might consider these things ordinary, but they have meant more to me than you probably realise.",
+      "I know I'm not always the easiest person to deal with, and I might not always express things properly, but I hope you know that I genuinely appreciate having you in my life. Somewhere along the way, you stopped being just someone I met at a hackathon and became family. And that's something I'll always be grateful for.",
+      "No matter how life changes, where we end up, how busy things get, or how often we get to talk, I hope that never changes the bond we've built. You will always have a special place in my life. And remember, you're forever my kid. Doesn't matter how old you grow, how independent you become, or how much you argue about it. That position is permanent, and unfortunately for you, there's no resignation option. 😂❤️",
+      "I genuinely wish you a life filled with happiness, peace, opportunities, and people who appreciate you for exactly who you are. I hope you achieve everything you've been dreaming of, get through every difficult phase with strength, and never have to question your worth. You deserve so many beautiful things in life.",
+      "And lastly, thank you for being you. I'm not sure if I say it enough, but you mean a lot to me. Out of all the unexpected things life has brought my way, meeting you and gaining a sister in you is definitely one of the things I'm most thankful for.",
+      "Happy Birthday once again, kiddo. Keep smiling, keep growing, and never lose that little bit of madness that makes you YOU. ❤️",
+    ],
+    signature: "With all my love, always.",
+  },
   keepsake: {
     enabled: true,
     photo: emptyPhoto("portrait", "Birthday portrait"),
@@ -176,6 +192,7 @@ export const siteContentSchema = z.object({
   }),
   statement: z.object({ heading: text(120), big: text(60), coinTop: text(14), coinBottom: text(14), note: text(120), photo: photoSchema }),
   finale: z.object({ greeting: text(80), title: text(30), highlight: text(30), message: text(400), button: text(40), buttonDone: text(40), watermark: text(30), footer: text(60) }),
+  letter: z.object({ kicker: text(100), title: text(100), description: text(200), paragraphs: z.array(text(1500)).min(1).max(10), signature: text(120) }),
   keepsake: z.object({ enabled: z.boolean(), photo: photoSchema, wish: text(160), poem: text(500), signature: text(50) }),
   birthdayAudio: z.object({ id: z.string().regex(/^[a-f0-9]{24}$/).nullable() }),
   backgroundVideo: z.object({
