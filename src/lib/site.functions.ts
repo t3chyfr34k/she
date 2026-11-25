@@ -28,6 +28,7 @@ export type BirthdayWishSummary = {
   message: string;
   photoUrl: string;
   videoUrl: string | null;
+  audioUrl: string | null;
   createdAt: string;
 };
 type ContentDoc = { _id: string; content: unknown; updatedAt: Date };
@@ -63,9 +64,10 @@ type BirthdayWishDoc = {
   message: string;
   photoId: ObjectId;
   videoId: ObjectId | null;
+  audioId?: ObjectId | null;
   createdAt: Date;
 };
-type BirthdayWishMediaIndexDoc = { _id: ObjectId; kind: "photo" | "video" };
+type BirthdayWishMediaIndexDoc = { _id: ObjectId; kind: "photo" | "video" | "audio" };
 
 const MAX_UPLOAD_BYTES = 8 * 1024 * 1024;
 const ALLOWED_TYPES = ["image/jpeg", "image/png", "image/webp", "image/gif"];
@@ -481,7 +483,12 @@ export const getBirthdayWishes = createServerFn({ method: "GET" })
       return await withDb(async (db) => {
         const wishes = await db
           .collection<BirthdayWishDoc>("birthday_wishes")
-          .find({}, { projection: { name: 1, message: 1, photoId: 1, videoId: 1, createdAt: 1 } })
+          .find(
+            {},
+            {
+              projection: { name: 1, message: 1, photoId: 1, videoId: 1, audioId: 1, createdAt: 1 },
+            },
+          )
           .sort({ createdAt: -1, _id: -1 })
           .limit(60)
           .toArray();
@@ -491,6 +498,7 @@ export const getBirthdayWishes = createServerFn({ method: "GET" })
           message: wish.message,
           photoUrl: `/api/public/wish-media/${wish.photoId.toHexString()}`,
           videoUrl: wish.videoId ? `/api/public/wish-media/${wish.videoId.toHexString()}` : null,
+          audioUrl: wish.audioId ? `/api/public/wish-media/${wish.audioId.toHexString()}` : null,
           createdAt: wish.createdAt.toISOString(),
         }));
       });
@@ -508,7 +516,12 @@ export const adminListBirthdayWishes = createServerFn({ method: "POST" })
       return await withDb(async (db) => {
         const wishes = await db
           .collection<BirthdayWishDoc>("birthday_wishes")
-          .find({}, { projection: { name: 1, message: 1, photoId: 1, videoId: 1, createdAt: 1 } })
+          .find(
+            {},
+            {
+              projection: { name: 1, message: 1, photoId: 1, videoId: 1, audioId: 1, createdAt: 1 },
+            },
+          )
           .sort({ createdAt: -1, _id: -1 })
           .limit(100)
           .toArray();
@@ -518,6 +531,7 @@ export const adminListBirthdayWishes = createServerFn({ method: "POST" })
           message: wish.message,
           photoUrl: `/api/public/wish-media/${wish.photoId.toHexString()}`,
           videoUrl: wish.videoId ? `/api/public/wish-media/${wish.videoId.toHexString()}` : null,
+          audioUrl: wish.audioId ? `/api/public/wish-media/${wish.audioId.toHexString()}` : null,
           createdAt: wish.createdAt.toISOString(),
         }));
       });
@@ -570,7 +584,7 @@ export const adminDeleteBirthdayWish = createServerFn({ method: "POST" })
         const wish = await wishes.findOne({ _id: id });
         if (!wish) throw new Error("That wish no longer exists.");
         await wishes.deleteOne({ _id: id });
-        const mediaIds = [wish.photoId, wish.videoId].filter(
+        const mediaIds = [wish.photoId, wish.videoId, wish.audioId].filter(
           (mediaId): mediaId is ObjectId => mediaId instanceof ObjectId,
         );
         if (mediaIds.length)

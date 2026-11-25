@@ -5,8 +5,8 @@ import { withDb } from "@/lib/mongo.server";
 type WishMediaDoc = {
   _id: ObjectId;
   data: Binary;
-  contentType: "image/jpeg" | "image/png" | "image/webp" | "video/mp4" | "video/webm";
-  kind: "photo" | "video";
+  contentType: string;
+  kind: "photo" | "video" | "audio";
 };
 
 /** Public delivery for photos and optional videos attached to guestbook wishes. */
@@ -27,7 +27,7 @@ export const Route = createFileRoute("/api/public/wish-media/$id")({
           let start = 0;
           let end = size - 1;
           let partial = false;
-          const range = doc.kind === "video" ? request.headers.get("range") : null;
+          const range = doc.kind !== "photo" ? request.headers.get("range") : null;
           if (range) {
             const match = /^bytes=(\d*)-(\d*)$/.exec(range);
             if (!match || (!match[1] && !match[2]))
@@ -64,7 +64,7 @@ export const Route = createFileRoute("/api/public/wish-media/$id")({
               "content-disposition": "inline",
               "x-content-type-options": "nosniff",
               "cache-control": "public, max-age=3600",
-              ...(doc.kind === "video" ? { "accept-ranges": "bytes" } : {}),
+              ...(doc.kind !== "photo" ? { "accept-ranges": "bytes" } : {}),
               ...(partial ? { "content-range": `bytes ${start}-${end}/${size}` } : {}),
             },
           });

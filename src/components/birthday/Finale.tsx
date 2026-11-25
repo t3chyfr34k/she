@@ -157,6 +157,16 @@ export function Finale({ name, wishes }: { name: string; wishes: BirthdayWishSum
                         </video>
                       </div>
                     )}
+                    {wish.audioUrl && (
+                      <div className="mt-5 rounded-xl bg-mint/70 p-3">
+                        <p className="mb-2 text-xs font-semibold text-forest/70">
+                          Voice wish from {wish.name}
+                        </p>
+                        <audio controls preload="none" src={wish.audioUrl} className="w-full">
+                          Your browser does not support audio playback.
+                        </audio>
+                      </div>
+                    )}
                     {wish.videoUrl && (
                       <p className="mt-2 flex items-center gap-1.5 text-xs font-semibold text-forest/60">
                         <PlayCircle className="h-4 w-4" aria-hidden="true" />

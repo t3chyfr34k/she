@@ -15,7 +15,7 @@ export const Route = createFileRoute("/api/public/wishes")({
           }
         }
         const contentLength = Number(request.headers.get("content-length") ?? 0);
-        if (contentLength > 35 * 1024 * 1024)
+        if (contentLength > 46 * 1024 * 1024)
           return Response.json({ error: "The upload is too large." }, { status: 413 });
         try {
           const form = await request.formData();

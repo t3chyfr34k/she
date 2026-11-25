@@ -11,6 +11,7 @@ type SubmittedWish = {
   message: string;
   photoUrl: string;
   videoUrl: string | null;
+  audioUrl: string | null;
   createdAt: string;
 };
 
@@ -65,7 +66,7 @@ export function BirthdayWishManager({ token }: { token: string }) {
   async function deleteWish(wish: SubmittedWish) {
     if (
       !window.confirm(
-        `Delete the wish from ${wish.name}, including its uploaded photo${wish.videoUrl ? " and video" : ""}? This cannot be undone.`,
+        `Delete the wish from ${wish.name}, including its uploaded photo, audio, and video? This cannot be undone.`,
       )
     )
       return;
@@ -140,6 +141,18 @@ export function BirthdayWishManager({ token }: { token: string }) {
                       playsInline
                       className="h-auto max-h-64 max-w-full w-auto rounded-lg bg-forest object-contain"
                       aria-label={`Video wish from ${wish.name}`}
+                    />
+                  </div>
+                )}
+                {wish.audioUrl && (
+                  <div className="mt-3">
+                    <p className="mb-1 text-xs font-semibold text-slate-600">Voice wish</p>
+                    <audio
+                      src={wish.audioUrl}
+                      controls
+                      preload="none"
+                      className="w-full"
+                      aria-label={`Audio wish from ${wish.name}`}
                     />
                   </div>
                 )}
