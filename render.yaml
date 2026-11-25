@@ -17,3 +17,7 @@ services:
         sync: false
       - key: SESSION_SECRET
         generateValue: true
+      - key: BIRTHDAY_PASSCODE
+        sync: false
+      - key: BIRTHDAY_ACCESS_SECRET
+        generateValue: true

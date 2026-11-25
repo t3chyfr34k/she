@@ -10,15 +10,25 @@
 
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as IndexRouteImport } from './routes/index'
+import { Route as AccessRouteImport } from './routes/access'
 import { Route as AdminRouteImport } from './routes/admin'
+import { Route as WishesRouteImport } from './routes/wishes'
+import { Route as ApiBirthdayAccessRouteImport } from './routes/api/birthday-access'
 import { Route as PSlugRouteImport } from './routes/p.$slug'
+import { Route as ApiPublicWishesRouteImport } from './routes/api/public/wishes'
 import { Route as ApiPublicBackgroundVideoIdRouteImport } from './routes/api/public/background-video/$id'
 import { Route as ApiPublicBirthdayAudioIdRouteImport } from './routes/api/public/birthday-audio/$id'
 import { Route as ApiPublicPhotosIdRouteImport } from './routes/api/public/photos/$id'
+import { Route as ApiPublicWishMediaIdRouteImport } from './routes/api/public/wish-media/$id'
 
 const IndexRoute = IndexRouteImport.update({
   id: '/',
   path: '/',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AccessRoute = AccessRouteImport.update({
+  id: '/access',
+  path: '/access',
   getParentRoute: () => rootRouteImport,
 } as any)
 const AdminRoute = AdminRouteImport.update({
@@ -26,9 +36,24 @@ const AdminRoute = AdminRouteImport.update({
   path: '/admin',
   getParentRoute: () => rootRouteImport,
 } as any)
+const WishesRoute = WishesRouteImport.update({
+  id: '/wishes',
+  path: '/wishes',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ApiBirthdayAccessRoute = ApiBirthdayAccessRouteImport.update({
+  id: '/api/birthday-access',
+  path: '/api/birthday-access',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const PSlugRoute = PSlugRouteImport.update({
   id: '/p/$slug',
   path: '/p/$slug',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ApiPublicWishesRoute = ApiPublicWishesRouteImport.update({
+  id: '/api/public/wishes',
+  path: '/api/public/wishes',
   getParentRoute: () => rootRouteImport,
 } as any)
 const ApiPublicBackgroundVideoIdRoute =
@@ -48,66 +73,106 @@ const ApiPublicPhotosIdRoute = ApiPublicPhotosIdRouteImport.update({
   path: '/api/public/photos/$id',
   getParentRoute: () => rootRouteImport,
 } as any)
+const ApiPublicWishMediaIdRoute = ApiPublicWishMediaIdRouteImport.update({
+  id: '/api/public/wish-media/$id',
+  path: '/api/public/wish-media/$id',
+  getParentRoute: () => rootRouteImport,
+} as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
+  '/access': typeof AccessRoute
   '/admin': typeof AdminRoute
+  '/wishes': typeof WishesRoute
+  '/api/birthday-access': typeof ApiBirthdayAccessRoute
   '/p/$slug': typeof PSlugRoute
+  '/api/public/wishes': typeof ApiPublicWishesRoute
   '/api/public/background-video/$id': typeof ApiPublicBackgroundVideoIdRoute
   '/api/public/birthday-audio/$id': typeof ApiPublicBirthdayAudioIdRoute
   '/api/public/photos/$id': typeof ApiPublicPhotosIdRoute
+  '/api/public/wish-media/$id': typeof ApiPublicWishMediaIdRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
+  '/access': typeof AccessRoute
   '/admin': typeof AdminRoute
+  '/wishes': typeof WishesRoute
+  '/api/birthday-access': typeof ApiBirthdayAccessRoute
   '/p/$slug': typeof PSlugRoute
+  '/api/public/wishes': typeof ApiPublicWishesRoute
   '/api/public/background-video/$id': typeof ApiPublicBackgroundVideoIdRoute
   '/api/public/birthday-audio/$id': typeof ApiPublicBirthdayAudioIdRoute
   '/api/public/photos/$id': typeof ApiPublicPhotosIdRoute
+  '/api/public/wish-media/$id': typeof ApiPublicWishMediaIdRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
+  '/access': typeof AccessRoute
   '/admin': typeof AdminRoute
+  '/wishes': typeof WishesRoute
+  '/api/birthday-access': typeof ApiBirthdayAccessRoute
   '/p/$slug': typeof PSlugRoute
+  '/api/public/wishes': typeof ApiPublicWishesRoute
   '/api/public/background-video/$id': typeof ApiPublicBackgroundVideoIdRoute
   '/api/public/birthday-audio/$id': typeof ApiPublicBirthdayAudioIdRoute
   '/api/public/photos/$id': typeof ApiPublicPhotosIdRoute
+  '/api/public/wish-media/$id': typeof ApiPublicWishMediaIdRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
   fullPaths:
     | '/'
+    | '/access'
     | '/admin'
+    | '/wishes'
+    | '/api/birthday-access'
     | '/p/$slug'
+    | '/api/public/wishes'
     | '/api/public/background-video/$id'
     | '/api/public/birthday-audio/$id'
     | '/api/public/photos/$id'
+    | '/api/public/wish-media/$id'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
+    | '/access'
     | '/admin'
+    | '/wishes'
+    | '/api/birthday-access'
     | '/p/$slug'
+    | '/api/public/wishes'
     | '/api/public/background-video/$id'
     | '/api/public/birthday-audio/$id'
     | '/api/public/photos/$id'
+    | '/api/public/wish-media/$id'
   id:
     | '__root__'
     | '/'
+    | '/access'
     | '/admin'
+    | '/wishes'
+    | '/api/birthday-access'
     | '/p/$slug'
+    | '/api/public/wishes'
     | '/api/public/background-video/$id'
     | '/api/public/birthday-audio/$id'
     | '/api/public/photos/$id'
+    | '/api/public/wish-media/$id'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
+  AccessRoute: typeof AccessRoute
   AdminRoute: typeof AdminRoute
+  WishesRoute: typeof WishesRoute
+  ApiBirthdayAccessRoute: typeof ApiBirthdayAccessRoute
   PSlugRoute: typeof PSlugRoute
+  ApiPublicWishesRoute: typeof ApiPublicWishesRoute
   ApiPublicBackgroundVideoIdRoute: typeof ApiPublicBackgroundVideoIdRoute
   ApiPublicBirthdayAudioIdRoute: typeof ApiPublicBirthdayAudioIdRoute
   ApiPublicPhotosIdRoute: typeof ApiPublicPhotosIdRoute
+  ApiPublicWishMediaIdRoute: typeof ApiPublicWishMediaIdRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -119,6 +184,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof IndexRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/access': {
+      id: '/access'
+      path: '/access'
+      fullPath: '/access'
+      preLoaderRoute: typeof AccessRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/admin': {
       id: '/admin'
       path: '/admin'
@@ -126,11 +198,32 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AdminRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/wishes': {
+      id: '/wishes'
+      path: '/wishes'
+      fullPath: '/wishes'
+      preLoaderRoute: typeof WishesRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/api/birthday-access': {
+      id: '/api/birthday-access'
+      path: '/api/birthday-access'
+      fullPath: '/api/birthday-access'
+      preLoaderRoute: typeof ApiBirthdayAccessRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/p/$slug': {
       id: '/p/$slug'
       path: '/p/$slug'
       fullPath: '/p/$slug'
       preLoaderRoute: typeof PSlugRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/api/public/wishes': {
+      id: '/api/public/wishes'
+      path: '/api/public/wishes'
+      fullPath: '/api/public/wishes'
+      preLoaderRoute: typeof ApiPublicWishesRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/api/public/background-video/$id': {
@@ -154,16 +247,28 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ApiPublicPhotosIdRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/api/public/wish-media/$id': {
+      id: '/api/public/wish-media/$id'
+      path: '/api/public/wish-media/$id'
+      fullPath: '/api/public/wish-media/$id'
+      preLoaderRoute: typeof ApiPublicWishMediaIdRouteImport
+      parentRoute: typeof rootRouteImport
+    }
   }
 }
 
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
+  AccessRoute: AccessRoute,
   AdminRoute: AdminRoute,
+  WishesRoute: WishesRoute,
+  ApiBirthdayAccessRoute: ApiBirthdayAccessRoute,
   PSlugRoute: PSlugRoute,
+  ApiPublicWishesRoute: ApiPublicWishesRoute,
   ApiPublicBackgroundVideoIdRoute: ApiPublicBackgroundVideoIdRoute,
   ApiPublicBirthdayAudioIdRoute: ApiPublicBirthdayAudioIdRoute,
   ApiPublicPhotosIdRoute: ApiPublicPhotosIdRoute,
+  ApiPublicWishMediaIdRoute: ApiPublicWishMediaIdRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)

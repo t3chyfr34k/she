@@ -49,6 +49,24 @@ function logRequestDiagnostic(details: Record<string, unknown>): void {
   console.error(`[request-diagnostic] ${JSON.stringify(details)}`);
 }
 
+function isPublicRequest(request: Request, pathname: string): boolean {
+  const readOnly = request.method === "GET" || request.method === "HEAD";
+  if (request.headers.get("x-tsr-serverFn") === "true") return true;
+  if (pathname === "/health" || pathname === "/" || pathname === "/admin" || pathname === "/wishes")
+    return readOnly;
+  if (pathname === "/api/birthday-access") return request.method === "POST";
+  if (pathname === "/api/public/wishes") return request.method === "POST";
+  if (pathname.startsWith("/api/public/")) return readOnly;
+  if (
+    pathname.startsWith("/assets/") ||
+    pathname === "/manifest.webmanifest" ||
+    pathname === "/birthday-favicon.svg" ||
+    pathname === "/robots.txt"
+  )
+    return readOnly;
+  return false;
+}
+
 function isH3SwallowedErrorBody(body: string): boolean {
   try {
     const payload = JSON.parse(body) as { unhandled?: unknown; message?: unknown };
@@ -66,15 +84,19 @@ export default {
     const requestId = crypto.randomUUID();
     const startedAt = Date.now();
     const url = new URL(request.url);
-    request.signal.addEventListener("abort", () => {
-      logRequestDiagnostic({
-        event: "request_aborted",
-        requestId,
-        method: request.method,
-        path: url.pathname,
-        elapsedMs: Date.now() - startedAt,
-      });
-    }, { once: true });
+    request.signal.addEventListener(
+      "abort",
+      () => {
+        logRequestDiagnostic({
+          event: "request_aborted",
+          requestId,
+          method: request.method,
+          path: url.pathname,
+          elapsedMs: Date.now() - startedAt,
+        });
+      },
+      { once: true },
+    );
 
     try {
       if (url.pathname === "/health" && request.method === "GET") {
@@ -82,6 +104,13 @@ export default {
           status: "ok",
           uptime: getUptimeSeconds(),
           timestamp: new Date().toISOString(),
+        });
+      }
+
+      if (!isPublicRequest(request, url.pathname)) {
+        return new Response(null, {
+          status: 302,
+          headers: { location: "/", "cache-control": "no-store" },
         });
       }
 

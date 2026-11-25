@@ -12,14 +12,22 @@ import type { Plugin } from "vite";
 import { loadEnv } from "vite";
 import { fileURLToPath } from "node:url";
 
-const punycodeEntry = fileURLToPath(new URL("./node_modules/punycode/punycode.js", import.meta.url));
+const punycodeEntry = fileURLToPath(
+  new URL("./node_modules/punycode/punycode.js", import.meta.url),
+);
 
 // Vite exposes .env values through import.meta.env, but the server-only MongoDB
 // code reads process.env. Load these private settings into the Node process too.
 const envMode = process.env["NODE_ENV"] === "production" ? "production" : "development";
 const isRenderNodeBuild = process.env["RENDER_NODE_SERVER"] === "true";
 const localEnv = loadEnv(envMode, process.cwd(), "");
-for (const key of ["MONGODB_URI", "ADMIN_PASSWORD", "SESSION_SECRET"]) {
+for (const key of [
+  "MONGODB_URI",
+  "ADMIN_PASSWORD",
+  "SESSION_SECRET",
+  "BIRTHDAY_PASSCODE",
+  "BIRTHDAY_ACCESS_SECRET",
+]) {
   if (!process.env[key] && localEnv[key]) process.env[key] = localEnv[key];
 }
 
@@ -30,7 +38,8 @@ const stripSourceTagsFromThreeScenes = (): Plugin => ({
   enforce: "pre",
   apply: "serve",
   transform(code, id) {
-    if (!/\/src\/components\/.*Scene\.tsx(\?.*)?$/.test(id) || !code.includes("data-tsd-source")) return;
+    if (!/\/src\/components\/.*Scene\.tsx(\?.*)?$/.test(id) || !code.includes("data-tsd-source"))
+      return;
     return {
       code: code
         .replace(/\s+data-tsd-source=(?:"[^"]*"|\{[^}]*\})/g, "")
