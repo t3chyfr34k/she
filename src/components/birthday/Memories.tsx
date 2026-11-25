@@ -95,7 +95,7 @@ export function Memories({ name }: { name: string }) {
       >
         <motion.div
           style={{ rotateY: discRotate }}
-          className="relative grid aspect-square w-[62vw] max-w-[440px] place-items-center rounded-full bg-gold shadow-lift [transform-style:preserve-3d]"
+          className="relative grid aspect-square w-[62vw] max-w-[440px] place-items-center rounded-full bg-gold shadow-lift [container-type:inline-size] [transform-style:preserve-3d]"
         >
           <div className="absolute inset-[8%] rounded-full bg-cream" />
           <div className="absolute inset-[8%] rounded-full border-[6px] border-dashed border-jade/50" />
@@ -103,7 +103,10 @@ export function Memories({ name }: { name: string }) {
             <p className="label-chip text-xs tracking-[0.18em] sm:text-lg sm:tracking-[0.3em] md:text-xl">
               {memories.starring}
             </p>
-            <p className="text-display mx-auto max-w-full break-words text-[clamp(1.65rem,9vw,7.5rem)] leading-[0.85] md:text-[7.5rem]">
+            <p
+              style={{ fontSize: `min(${108 / Math.max(name.length, 1)}cqw, 7rem)` }}
+              className="text-display mx-auto max-w-full whitespace-nowrap leading-[0.85] tracking-tight"
+            >
               {name}
             </p>
             <p className="font-hand mx-auto mt-2 max-w-full break-words px-1 text-[clamp(0.85rem,3.5vw,1.875rem)] leading-[1.05] md:text-3xl">
