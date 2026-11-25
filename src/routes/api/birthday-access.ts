@@ -1,19 +1,13 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { issueBirthdayAccessToken, verifyBirthdayPasscode } from "@/lib/birthday-access.server";
+import { hasSameRequestOrigin } from "@/lib/request-origin.server";
 
 export const Route = createFileRoute("/api/birthday-access")({
   server: {
     handlers: {
       POST: async ({ request }) => {
-        const origin = request.headers.get("origin");
-        if (origin) {
-          try {
-            if (new URL(origin).origin !== new URL(request.url).origin)
-              return Response.json({ error: "Request origin was not accepted." }, { status: 403 });
-          } catch {
-            return Response.json({ error: "Request origin was not accepted." }, { status: 403 });
-          }
-        }
+        if (!hasSameRequestOrigin(request))
+          return Response.json({ error: "Request origin was not accepted." }, { status: 403 });
         const secret = process.env["BIRTHDAY_ACCESS_SECRET"];
         if (!secret || !process.env["BIRTHDAY_PASSCODE"])
           return Response.json({ error: "Passcode access isn’t configured." }, { status: 503 });

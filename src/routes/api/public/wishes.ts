@@ -1,19 +1,13 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { saveBirthdayWish, BirthdayWishValidationError } from "@/lib/birthday-wishes.server";
+import { hasSameRequestOrigin } from "@/lib/request-origin.server";
 
 export const Route = createFileRoute("/api/public/wishes")({
   server: {
     handlers: {
       POST: async ({ request }) => {
-        const origin = request.headers.get("origin");
-        if (origin) {
-          try {
-            if (new URL(origin).origin !== new URL(request.url).origin)
-              return Response.json({ error: "Request origin was not accepted." }, { status: 403 });
-          } catch {
-            return Response.json({ error: "Request origin was not accepted." }, { status: 403 });
-          }
-        }
+        if (!hasSameRequestOrigin(request))
+          return Response.json({ error: "Request origin was not accepted." }, { status: 403 });
         const contentLength = Number(request.headers.get("content-length") ?? 0);
         if (contentLength > 46 * 1024 * 1024)
           return Response.json({ error: "The upload is too large." }, { status: 413 });
