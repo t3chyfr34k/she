@@ -1,7 +1,8 @@
 import { useEffect, useState } from "react";
 import { BirthdayWishManager } from "@/components/admin/BirthdayWishManager";
 import {
-  MAX_WALL_PHOTOS,
+  DEFAULT_CONTENT,
+  emptyPhoto,
   photoUrl,
   type BackgroundVideo,
   type Photo,
@@ -32,6 +33,157 @@ const fieldClass =
   "mt-1 w-full rounded-lg border border-forest-deep/20 bg-white px-3 py-2 text-sm text-slate-900 outline-none focus:border-forest focus:ring-2 focus:ring-forest/20";
 const buttonClass =
   "rounded-lg border border-forest-deep/20 px-3 py-2 text-sm font-semibold text-forest-deep hover:bg-mint";
+const EDITABLE_SECTIONS = [
+  "name",
+  "hero",
+  "pullTab",
+  "ribbon",
+  "memories",
+  "wall",
+  "wishes",
+  "statement",
+  "finale",
+  "letter",
+  "keepsake",
+];
+
+const FIELD_HELP: Record<string, string> = {
+  name: "Birthday girl's name shown across the page. Leave blank if you prefer no name.",
+  "hero.tagline": "Small line above the birthday headline.",
+  "hero.leftWord": "First large word in the birthday headline.",
+  "hero.badge": "Short text inside the small badge between the headline words.",
+  "hero.rightWord": "Second large phrase in the birthday headline.",
+  "hero.line1": "First line of the main birthday greeting.",
+  "hero.line2": "Second line of the main birthday greeting.",
+  "hero.sticker": "Small sticker text. Use {name} to insert the birthday girl's name.",
+  "hero.hint": "Short instruction shown near the birthday cake interaction.",
+  "pullTab.hint": "Small hint beside the pull tab.",
+  "pullTab.label": "Text printed on the pull tab.",
+  "pullTab.messages":
+    "Secret messages revealed when visitors pull the tab; add or remove lines below.",
+  "ribbon.phrase": "Scrolling words shown on the ribbon strip.",
+  "memories.label": "Small label above the large memories heading.",
+  "memories.bigWord": "Large background title in the memories section.",
+  "memories.starring": "Small label above the birthday girl's name in the center badge.",
+  "memories.edition": "Short playful line beneath her name in the badge.",
+  "memories.seal": "Text repeated around the round seal near the badge.",
+  "memories.chips": "Small memory captions displayed as chips; add or remove captions below.",
+  "memories.photos":
+    "Photos displayed around the center badge; each photo can be uploaded or removed below.",
+  "wall.label": "Small label above the photo wall title.",
+  "wall.title": "First part of the photo wall heading.",
+  "wall.highlight": "Highlighted part of the photo wall heading.",
+  "wall.intro": "Short instruction displayed under the photo wall title.",
+  "wall.photos":
+    "Photos shown in the photo wall. Upload a batch above or edit individual photo details here.",
+  "wishes.title": "First part of the wishes section heading.",
+  "wishes.highlight": "Highlighted part of the wishes section heading.",
+  "wishes.intro": "Optional introduction above the birthday wishes.",
+  "wishes.items":
+    "Each item becomes one wish in the wheel. Leave the list empty to hide the wheel.",
+  "wishes.items.title": "Short title shown on the wish circle.",
+  "wishes.items.note": "Message shown when this wish is selected.",
+  "statement.heading":
+    "Introductory lines in the celebration section. Use a new line to split them.",
+  "statement.big": "Large scrolling phrase in the celebration section.",
+  "statement.coinTop": "Top word on the small coin graphic.",
+  "statement.coinBottom": "Bottom word on the small coin graphic.",
+  "statement.note": "Small note displayed beside the celebration graphic.",
+  "finale.greeting":
+    "Greeting above the final birthday wish. Use {name} for the birthday girl's name.",
+  "finale.title": "First word of the final wish heading.",
+  "finale.highlight": "Highlighted words in the final wish heading.",
+  "finale.message": "Message shown with the final birthday wish.",
+  "finale.button": "Button label before the birthday interaction is complete.",
+  "finale.buttonDone": "Button label after the interaction is complete.",
+  "finale.watermark": "Small decorative text in the final section.",
+  "finale.footer": "Sign-off at the bottom of the birthday page.",
+  "letter.kicker": "Handwritten-style line above the letter title.",
+  "letter.title": "Main title of the birthday letter.",
+  "letter.description": "Short subtitle below the letter title.",
+  "letter.paragraphs": "Letter paragraphs shown in order; add or remove paragraphs below.",
+  "letter.signature": "Sign-off at the end of the birthday letter.",
+  "keepsake.enabled": "Turn the downloadable keepsake card on or off.",
+  "keepsake.wish": "Short message printed above the card poem.",
+  "keepsake.poem": "Main message printed on the downloadable birthday card.",
+  "keepsake.signature": "Sign-off printed at the bottom of the card.",
+  "pages.slug": "Unique URL part for this page, using lowercase letters, numbers, and hyphens.",
+  "pages.title": "Heading displayed at the top of this custom page.",
+  "pages.body": "Text displayed on this custom page.",
+};
+
+const ARRAY_HELP: Record<string, string> = {
+  "pullTab.messages": FIELD_HELP["pullTab.messages"]!,
+  "memories.chips": FIELD_HELP["memories.chips"]!,
+  "memories.photos": FIELD_HELP["memories.photos"]!,
+  "wall.photos": FIELD_HELP["wall.photos"]!,
+  "wishes.items": FIELD_HELP["wishes.items"]!,
+  "letter.paragraphs": FIELD_HELP["letter.paragraphs"]!,
+};
+
+const SECTION_LABELS: Record<string, string> = {
+  name: "Birthday person's name",
+  hero: "Opening scene",
+  pullTab: "Pull-tab surprise",
+  ribbon: "Ribbon message and photo",
+  memories: "Memories",
+  wall: "Photo wall",
+  wishes: "Birthday wishes",
+  statement: "Celebration statement",
+  finale: "Closing wish",
+  letter: "Birthday letter",
+  keepsake: "Birthday card",
+};
+
+const FIELD_LABELS: Record<string, string> = {
+  tagline: "Intro line",
+  leftWord: "Headline word 1",
+  badge: "Center badge",
+  rightWord: "Headline word 2",
+  line1: "Greeting line 1",
+  line2: "Greeting line 2",
+  sticker: "Sticker text",
+  hint: "Visitor hint",
+  bigWord: "Large background title",
+  starring: "Center badge label",
+  edition: "Tagline under the name",
+  seal: "Round seal text",
+  coinTop: "Coin top text",
+  coinBottom: "Coin bottom text",
+  kicker: "Small line above title",
+  description: "Subtitle",
+  paragraphs: "Message paragraphs",
+  signature: "Sign-off",
+  wish: "Short birthday wish",
+  poem: "Card message",
+  intro: "Introduction",
+  highlight: "Highlighted words",
+  title: "Title",
+  note: "Message",
+  body: "Page text",
+  slug: "Page URL name",
+  alt: "Image description",
+  caption: "Image caption",
+};
+
+function pathKey(path: PathPart[]) {
+  return path.filter((part) => typeof part !== "number").join(".");
+}
+
+function displayLabel(label: string) {
+  return FIELD_LABELS[label] ?? label.replace(/([a-z])([A-Z])/g, "$1 $2");
+}
+
+function fieldHelp(path: PathPart[]) {
+  const key = pathKey(path);
+  if (path.some((part) => typeof part === "number") && ARRAY_HELP[key]) return undefined;
+  if (FIELD_HELP[key]) return FIELD_HELP[key];
+  if (key.endsWith(".alt"))
+    return "Describe the image for screen readers; you can leave this blank.";
+  if (key.endsWith(".caption")) return "Optional caption associated with this image.";
+  if (key.endsWith(".shape")) return "Choose the image frame shape used in the layout.";
+  return undefined;
+}
 
 function isPhoto(value: unknown): value is {
   id: string | null;
@@ -80,8 +232,24 @@ function updateAt(root: unknown, path: PathPart[], value: unknown): unknown {
   return root;
 }
 
-function defaultItem(items: unknown[]) {
+function defaultItem(items: unknown[], path: PathPart[]) {
   const sample = items[0];
+  if (sample === undefined) {
+    const key = pathKey(path);
+    if (key === "wishes.items") return { title: "", note: "" };
+    if (key === "wall.photos" || key === "memories.photos")
+      return emptyPhoto("square", "Add a photo");
+    let fallback: unknown = DEFAULT_CONTENT;
+    for (const part of path) {
+      if (!fallback || typeof fallback !== "object") return "";
+      fallback = (fallback as Record<string, unknown>)[String(part)];
+    }
+    if (Array.isArray(fallback)) {
+      const template = fallback[0];
+      if (template && typeof template === "object") return structuredClone(template);
+    }
+    return "";
+  }
   if (typeof sample === "string") return "";
   if (typeof sample === "number") return 0;
   if (sample && typeof sample === "object") return structuredClone(sample);
@@ -201,7 +369,10 @@ function ValueEditor({ label, value, path, token, onChange, onNotice }: EditorPr
     const photo = value;
     return (
       <fieldset className="mt-3 rounded-xl border border-forest-deep/15 bg-mint/50 p-3">
-        <legend className="px-1 text-sm font-bold text-forest-deep">{label}</legend>
+        <legend className="px-1 text-sm font-bold text-forest-deep">{displayLabel(label)}</legend>
+        {ARRAY_HELP[pathKey(path)] && (
+          <p className="mb-3 text-xs text-slate-600">{ARRAY_HELP[pathKey(path)]}</p>
+        )}
         {photo.id && (
           <img
             src={photoUrl(photo.id)}
@@ -251,29 +422,26 @@ function ValueEditor({ label, value, path, token, onChange, onNotice }: EditorPr
         )}
         <div className="mt-3 grid gap-2 sm:grid-cols-2">
           {(["alt", "caption"] as const).map((key) => (
-            <label key={key} className="text-xs font-semibold capitalize text-slate-700">
-              {key}
-              <input
-                className={fieldClass}
-                maxLength={key === "alt" ? 200 : 240}
-                value={photo[key]}
-                onChange={(e) => onChange([...path, key], e.target.value)}
-              />
-            </label>
+            <div key={key}>
+              <label className="text-xs font-semibold capitalize text-slate-700">
+                {displayLabel(key)}
+                <input
+                  className={fieldClass}
+                  value={photo[key]}
+                  onChange={(e) => onChange([...path, key], e.target.value)}
+                />
+              </label>
+              {fieldHelp([...path, key]) && (
+                <p className="mt-1 text-xs font-normal text-slate-500">
+                  {fieldHelp([...path, key])}
+                </p>
+              )}
+            </div>
           ))}
         </div>
-        <label className="mt-2 block text-xs font-semibold text-slate-700">
-          Shape
-          <select
-            className={fieldClass}
-            value={photo.shape}
-            onChange={(e) => onChange([...path, "shape"], e.target.value)}
-          >
-            {["portrait", "landscape", "square", "tall", "wide"].map((shape) => (
-              <option key={shape}>{shape}</option>
-            ))}
-          </select>
-        </label>
+        <p className="mt-2 text-xs text-slate-500">
+          Photo framing is handled by the template. Add an optional description or caption.
+        </p>
       </fieldset>
     );
   }
@@ -285,6 +453,10 @@ function ValueEditor({ label, value, path, token, onChange, onNotice }: EditorPr
         <legend className="px-1 text-sm font-bold text-forest-deep">
           Subtle blended background video
         </legend>
+        <p className="mb-3 text-xs text-slate-600">
+          Upload a subtle looping background video. Adjust opacity, blend, and blur to control its
+          appearance.
+        </p>
         {video.id && (
           <video
             src={`/api/public/background-video/${video.id}`}
@@ -379,6 +551,7 @@ function ValueEditor({ label, value, path, token, onChange, onNotice }: EditorPr
             className="mt-1 block w-full"
           />
         </label>
+        <p className="mt-1 text-xs text-slate-500">Controls how visible the background video is.</p>
         <label className="mt-3 block text-xs font-semibold text-slate-700">
           Blend mode
           <select
@@ -402,6 +575,9 @@ function ValueEditor({ label, value, path, token, onChange, onNotice }: EditorPr
             ))}
           </select>
         </label>
+        <p className="mt-1 text-xs text-slate-500">
+          Controls how the video colors mix with the page.
+        </p>
         <label className="mt-3 block text-xs font-semibold text-slate-700">
           Blur <span className="font-normal">{video.blur}px</span>
           <input
@@ -415,6 +591,9 @@ function ValueEditor({ label, value, path, token, onChange, onNotice }: EditorPr
             className="mt-1 block w-full"
           />
         </label>
+        <p className="mt-1 text-xs text-slate-500">
+          Softens the video edges; set to zero for no blur.
+        </p>
         <p className="mt-2 text-xs text-slate-600">
           Muted, looping video blends over the page colors and never blocks clicks. Save changes to
           publish your settings.
@@ -507,11 +686,13 @@ function ValueEditor({ label, value, path, token, onChange, onNotice }: EditorPr
   }
 
   if (Array.isArray(value)) {
+    const help = ARRAY_HELP[pathKey(path)];
     return (
       <fieldset className="mt-4 rounded-xl border border-slate-200 p-3">
         <legend className="px-1 text-sm font-bold text-slate-800">
           {label} <span className="font-normal text-slate-500">({value.length})</span>
         </legend>
+        {help && <p className="mb-3 text-xs text-slate-600">{help}</p>}
         <div className="space-y-2">
           {value.map((item, index) => (
             <div key={index} className="rounded-lg bg-slate-50 p-2">
@@ -543,7 +724,7 @@ function ValueEditor({ label, value, path, token, onChange, onNotice }: EditorPr
         <button
           type="button"
           className={`${buttonClass} mt-3`}
-          onClick={() => onChange(path, [...value, defaultItem(value)])}
+          onClick={() => onChange(path, [...value, defaultItem(value, path)])}
         >
           Add {label.toLowerCase()}
         </button>
@@ -554,20 +735,22 @@ function ValueEditor({ label, value, path, token, onChange, onNotice }: EditorPr
   if (value && typeof value === "object") {
     return (
       <fieldset className="mt-3 rounded-xl border border-slate-200 p-3">
-        <legend className="px-1 text-sm font-bold text-slate-800">{label}</legend>
+        <legend className="px-1 text-sm font-bold text-slate-800">{displayLabel(label)}</legend>
         <div className="grid gap-x-4 sm:grid-cols-2">
-          {Object.entries(value).map(([key, child]) => (
-            <div key={key} className={child && typeof child === "object" ? "sm:col-span-2" : ""}>
-              <ValueEditor
-                label={key}
-                value={child}
-                path={[...path, key]}
-                token={token}
-                onChange={onChange}
-                onNotice={onNotice}
-              />
-            </div>
-          ))}
+          {Object.entries(value)
+            .filter(([key]) => key !== "enabled" && key !== "shape")
+            .map(([key, child]) => (
+              <div key={key} className={child && typeof child === "object" ? "sm:col-span-2" : ""}>
+                <ValueEditor
+                  label={key}
+                  value={child}
+                  path={[...path, key]}
+                  token={token}
+                  onChange={onChange}
+                  onNotice={onNotice}
+                />
+              </div>
+            ))}
         </div>
       </fieldset>
     );
@@ -576,43 +759,48 @@ function ValueEditor({ label, value, path, token, onChange, onNotice }: EditorPr
   const text = typeof value === "string" ? value : String(value ?? "");
   if (typeof value === "boolean")
     return (
-      <label
-        htmlFor={inputId}
-        className="mt-3 flex items-center gap-2 text-xs font-semibold capitalize text-slate-700"
-      >
-        <input
-          id={inputId}
-          type="checkbox"
-          checked={value}
-          onChange={(e) => onChange(path, e.target.checked)}
-        />
-        {label}
-      </label>
+      <div>
+        <label
+          htmlFor={inputId}
+          className="mt-3 flex items-center gap-2 text-xs font-semibold capitalize text-slate-700"
+        >
+          <input
+            id={inputId}
+            type="checkbox"
+            checked={value}
+            onChange={(e) => onChange(path, e.target.checked)}
+          />
+          {displayLabel(label)}
+        </label>
+        {fieldHelp(path) && <p className="ml-5 text-xs text-slate-500">{fieldHelp(path)}</p>}
+      </div>
     );
   const long =
     text.length > 90 ||
     ["body", "message", "intro", "heading", "note", "phrase", "poem"].includes(label.toLowerCase());
   return (
-    <label htmlFor={inputId} className="mt-3 block text-xs font-semibold capitalize text-slate-700">
-      {label}
-      {long ? (
-        <textarea
-          id={inputId}
-          className={fieldClass}
-          rows={label.toLowerCase() === "poem" ? 8 : 3}
-          maxLength={label.toLowerCase() === "poem" ? 500 : undefined}
-          value={text}
-          onChange={(e) => onChange(path, e.target.value)}
-        />
-      ) : (
-        <input
-          id={inputId}
-          className={fieldClass}
-          value={text}
-          onChange={(e) => onChange(path, e.target.value)}
-        />
-      )}
-    </label>
+    <div className="mt-3">
+      <label htmlFor={inputId} className="block text-xs font-semibold capitalize text-slate-700">
+        {displayLabel(label)}
+        {long ? (
+          <textarea
+            id={inputId}
+            className={fieldClass}
+            rows={label.toLowerCase() === "poem" ? 8 : 3}
+            value={text}
+            onChange={(e) => onChange(path, e.target.value)}
+          />
+        ) : (
+          <input
+            id={inputId}
+            className={fieldClass}
+            value={text}
+            onChange={(e) => onChange(path, e.target.value)}
+          />
+        )}
+      </label>
+      {fieldHelp(path) && <p className="mt-1 text-xs text-slate-500">{fieldHelp(path)}</p>}
+    </div>
   );
 }
 
@@ -628,7 +816,7 @@ export function ContentEditor({
   const [notice, setNotice] = useState("");
   const [bulkBusy, setBulkBusy] = useState(false);
   const [clearingWall, setClearingWall] = useState(false);
-  const sections = Object.keys(draft).filter((key) => key !== "pages" && key !== "finale");
+  const sections = EDITABLE_SECTIONS.filter((key) => key in draft);
   const onChange = (path: PathPart[], value: unknown) =>
     setDraft((old) => updateAt(old, path, value) as SiteContent);
 
@@ -646,27 +834,22 @@ export function ContentEditor({
     }
   }
 
-  function addPage() {
-    let n = draft.pages.length + 1;
-    let slug = `new-page-${n}`;
-    while (draft.pages.some((page) => page.slug === slug)) slug = `new-page-${++n}`;
-    setDraft((old) => ({
-      ...old,
-      pages: [...old.pages, { slug, title: `New page ${n}`, body: "Add your text here." }],
-    }));
+  function loadTemplate() {
+    if (
+      !window.confirm(
+        "Replace the current text and selected photos in this editor with the clean birthday template? This only goes live after you save.",
+      )
+    )
+      return;
+    setDraft(structuredClone(DEFAULT_CONTENT));
+    setNotice("Clean template loaded. Select Save changes to publish it.");
   }
 
   async function uploadWallPhotos(event: React.ChangeEvent<HTMLInputElement>) {
     const input = event.currentTarget;
     const files = Array.from(input.files ?? []);
     if (!files.length) return;
-    const slots = MAX_WALL_PHOTOS - draft.wall.photos.filter((photo) => photo.id).length;
-    if (slots < 1) {
-      setNotice(`The photo wall already has its ${MAX_WALL_PHOTOS}-photo limit.`);
-      input.value = "";
-      return;
-    }
-    const selected = files.slice(0, slots);
+    const selected = files;
     const uploaded: Photo[] = [];
     setBulkBusy(true);
     setNotice("");
@@ -686,7 +869,7 @@ export function ContentEditor({
             id: result.id,
             w: result.w,
             h: result.h,
-            alt: file.name.slice(0, 200),
+            alt: file.name,
             caption: "",
             shape:
               result.w === result.h ? "square" : result.w > result.h ? "landscape" : "portrait",
@@ -702,11 +885,6 @@ export function ContentEditor({
       setNotice(
         `${uploaded.length} photo${uploaded.length === 1 ? "" : "s"} uploaded to MongoDB. Select Save changes to link them to the website.`,
       );
-      if (files.length > selected.length)
-        setNotice(
-          (current) =>
-            `${current} ${files.length - selected.length} file(s) skipped because the wall holds at most ${MAX_WALL_PHOTOS}.`,
-        );
     } catch (error) {
       setNotice(
         `${uploaded.length} uploaded so far. ${error instanceof Error ? error.message : "The next upload failed."} Save changes to link uploaded photos.`,
@@ -744,27 +922,45 @@ export function ContentEditor({
           <h1 className="text-xl font-black text-forest-deep">Birthday site editor</h1>
           <p className="text-xs text-slate-600">Changes save to MongoDB.</p>
         </div>
-        <button
-          type="button"
-          disabled={busy}
-          onClick={save}
-          className="rounded-lg bg-forest px-5 py-2.5 text-sm font-bold text-white hover:bg-forest-deep disabled:opacity-50"
-        >
-          {busy ? "Saving…" : "Save changes"}
-        </button>
+        <div className="flex shrink-0 items-center gap-2">
+          <button type="button" className={buttonClass} onClick={loadTemplate}>
+            Load clean template
+          </button>
+          <button
+            type="button"
+            disabled={busy}
+            onClick={save}
+            className="rounded-lg bg-forest px-5 py-2.5 text-sm font-bold text-white hover:bg-forest-deep disabled:opacity-50"
+          >
+            {busy ? "Saving…" : "Save changes"}
+          </button>
+        </div>
       </header>
       {notice && (
         <p role="status" className="mb-4 rounded-lg bg-mint p-3 text-sm text-forest-deep">
           {notice}
         </p>
       )}
-      <RenderDeploymentInfo token={token} />
-      <BirthdayWishManager token={token} />
+      <details className="mb-3 rounded-xl border bg-white p-3">
+        <summary className="cursor-pointer font-semibold text-forest-deep">
+          Manage wishes submitted by visitors
+        </summary>
+        <BirthdayWishManager token={token} />
+      </details>
+      <details className="mb-6 rounded-xl border bg-white p-3">
+        <summary className="cursor-pointer font-semibold text-forest-deep">
+          Deployment details
+        </summary>
+        <RenderDeploymentInfo token={token} />
+      </details>
       <section className="mb-6 rounded-2xl border bg-white p-4 shadow-sm sm:p-6">
         <h2 className="text-lg font-bold text-slate-900">Birthday page content</h2>
-        <p className="text-sm text-slate-600">
-          Edit all text, wishes, and photo slots. Uploaded photos go straight to MongoDB.
-        </p>
+        <div className="flex flex-wrap items-start justify-between gap-3">
+          <p className="text-sm text-slate-600">
+            Edit the birthday text and photos. Each section has a short guide; text and lists can be
+            left blank. Changes go live when saved.
+          </p>
+        </div>
         <div className="mt-4 rounded-xl border border-dashed border-forest/40 bg-mint p-4">
           <label htmlFor="wall-photo-upload" className="block font-bold text-forest-deep">
             Upload a batch to the photo wall
@@ -797,45 +993,19 @@ export function ContentEditor({
             preserved. After clearing, choose a fresh batch and save.
           </p>
         </div>
-        <div className="mt-4 rounded-xl border border-forest/20 bg-white p-4">
-          <h3 className="font-bold text-forest-deep">Birthday card photo</h3>
-          <p className="mt-1 text-sm text-slate-600">
-            Choose the photo shown on the downloadable birthday keepsake card.
-          </p>
-          <ValueEditor
-            label="Card photo"
-            value={draft.keepsake.photo}
-            path={["keepsake", "photo"]}
-            token={token}
-            onChange={onChange}
-            onNotice={setNotice}
-          />
-        </div>
         {sections.map((key) => (
           <details
             key={key}
             className="mt-4 rounded-xl border border-slate-200 p-3"
-            open={
-              key === "name" ||
-              key === "hero" ||
-              key === "backgroundVideo" ||
-              key === "keepsake" ||
-              key === "letter"
-            }
+            open={key === "name" || key === "hero"}
           >
-            <summary className="cursor-pointer font-bold capitalize text-forest-deep">
-              {key === "backgroundVideo"
-                ? "Background video"
-                : key === "keepsake"
-                  ? "Birthday keepsake card (poem and message)"
-                  : key === "letter"
-                    ? "Birthday letter (heading and full message)"
-                    : key}
+            <summary className="cursor-pointer font-bold text-forest-deep">
+              {SECTION_LABELS[key] ?? key}
             </summary>
             {key === "keepsake" && (
               <p className="mt-2 text-sm text-slate-600">
-                Edit the poem shown on the birthday keepsake card below. Keep it within 500
-                characters, then select Save changes.
+                Edit the poem shown on the birthday keepsake card below, or leave it blank. Select
+                Save changes to publish.
               </p>
             )}
             {key === "letter" && (
@@ -853,50 +1023,6 @@ export function ContentEditor({
               onNotice={setNotice}
             />
           </details>
-        ))}
-      </section>
-      <section className="mb-8 rounded-2xl border bg-white p-4 shadow-sm sm:p-6">
-        <div className="flex items-center justify-between gap-3">
-          <div>
-            <h2 className="text-lg font-bold text-slate-900">Additional pages</h2>
-            <p className="text-sm text-slate-600">
-              Add pages at /p/your-page-name. They’re saved with the site content.
-            </p>
-          </div>
-          <button type="button" className={buttonClass} onClick={addPage}>
-            Add page
-          </button>
-        </div>
-        {draft.pages.map((page, index) => (
-          <div
-            key={`${page.slug}-${index}`}
-            className="mt-4 rounded-xl border border-slate-200 p-3"
-          >
-            <div className="flex justify-between">
-              <h3 className="font-bold text-forest-deep">Page {index + 1}</h3>
-              <button
-                type="button"
-                className="text-xs font-semibold text-red-700"
-                onClick={() =>
-                  onChange(
-                    ["pages"],
-                    draft.pages.filter((_, i) => i !== index),
-                  )
-                }
-              >
-                Remove page
-              </button>
-            </div>
-            <ValueEditor
-              label="Page"
-              value={page}
-              path={["pages", index]}
-              token={token}
-              onChange={onChange}
-              onNotice={setNotice}
-            />
-            <p className="mt-2 text-xs text-slate-500">Public URL: /p/{page.slug}</p>
-          </div>
         ))}
       </section>
     </div>

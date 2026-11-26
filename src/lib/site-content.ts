@@ -26,130 +26,160 @@ export type CustomPage = { slug: string; title: string; body: string };
 export type BackgroundVideo = {
   id: string | null;
   opacity: number;
-  blendMode: "normal" | "multiply" | "screen" | "overlay" | "soft-light" | "hard-light" | "lighten" | "darken";
+  blendMode:
+    | "normal"
+    | "multiply"
+    | "screen"
+    | "overlay"
+    | "soft-light"
+    | "hard-light"
+    | "lighten"
+    | "darken";
   blur: number;
 };
 export type BirthdayAudio = { id: string | null };
 
 export type SiteContent = {
   name: string;
-  hero: { tagline: string; leftWord: string; badge: string; rightWord: string; line1: string; line2: string; sticker: string; hint: string };
+  hero: {
+    tagline: string;
+    leftWord: string;
+    badge: string;
+    rightWord: string;
+    line1: string;
+    line2: string;
+    sticker: string;
+    hint: string;
+  };
   pullTab: { hint: string; label: string; messages: string[] };
   ribbon: { phrase: string; photo: Photo };
-  memories: { label: string; bigWord: string; starring: string; edition: string; seal: string; chips: string[]; photos: Photo[] };
+  memories: {
+    label: string;
+    bigWord: string;
+    starring: string;
+    edition: string;
+    seal: string;
+    chips: string[];
+    photos: Photo[];
+  };
   wall: { label: string; title: string; highlight: string; intro: string; photos: Photo[] };
   wishes: { title: string; highlight: string; intro: string; items: Wish[] };
-  statement: { heading: string; big: string; coinTop: string; coinBottom: string; note: string; photo: Photo };
-  finale: { greeting: string; title: string; highlight: string; message: string; button: string; buttonDone: string; watermark: string; footer: string };
-  letter: { kicker: string; title: string; description: string; paragraphs: string[]; signature: string };
+  statement: {
+    heading: string;
+    big: string;
+    coinTop: string;
+    coinBottom: string;
+    note: string;
+    photo: Photo;
+  };
+  finale: {
+    greeting: string;
+    title: string;
+    highlight: string;
+    message: string;
+    button: string;
+    buttonDone: string;
+    watermark: string;
+    footer: string;
+  };
+  letter: {
+    kicker: string;
+    title: string;
+    description: string;
+    paragraphs: string[];
+    signature: string;
+  };
   keepsake: { enabled: boolean; photo: Photo; wish: string; poem: string; signature: string };
   birthdayAudio: BirthdayAudio;
   backgroundVideo: BackgroundVideo;
   pages: CustomPage[];
 };
 
-export const MAX_WALL_PHOTOS = 40;
-export const MAX_WISHES = 8;
-export const MIN_WISHES = 3;
-export const MEMORY_PHOTO_COUNT = 3;
-
-export const emptyPhoto = (shape: Shape = "portrait", alt = "", caption = ""): Photo => ({ id: null, w: 0, h: 0, alt, caption, shape });
-
-const WALL_SHAPES: Shape[] = ["portrait", "landscape", "square", "tall", "portrait", "wide", "square", "portrait", "landscape", "tall", "square", "portrait"];
+export const emptyPhoto = (shape: Shape = "portrait", alt = "", caption = ""): Photo => ({
+  id: null,
+  w: 0,
+  h: 0,
+  alt,
+  caption,
+  shape,
+});
 
 export const DEFAULT_CONTENT: SiteContent = {
-  name: "Sireen Nisha",
+  name: "Birthday Star",
   hero: {
-    tagline: "Innaikku full celebration mode dhaan!",
-    leftWord: "Innaikku",
-    badge: "B-day",
-    rightWord: "unakku dhaan",
+    tagline: "A day made for celebrating",
+    leftWord: "Today",
+    badge: "All About",
+    rightWord: "You",
     line1: "Happy",
     line2: "Birthday",
     sticker: "for {name} ♥",
-    hint: "Cake-a tap pannu, wish kelu",
+    hint: "Tap the cake to celebrate",
   },
   pullTab: {
-    hint: "Konjam pull pannu pa",
-    label: "Inga izhu",
-    messages: ["Aha! Secret kandupidichitta!","Innum venuma? Periya aasai dhaan!","Seri, last one… maybe.","Confetti-ku limit-e illa!"],
+    hint: "There is a little surprise",
+    label: "Pull here",
+    messages: ["Wishing you a wonderful birthday!"],
   },
   ribbon: {
-    phrase: "Wish kelu ✦ Candle oothu ✦ Cake saapdu ✦ Dance aadidu ✦ ",
-    photo: emptyPhoto("square", "A wrapped birthday gift"),
+    phrase: "Celebrate • Make a wish • Enjoy your day • ",
+    photo: emptyPhoto("square", "Add a birthday photo"),
   },
   memories: {
-    label: "Innaikku ivanga dhaan main character",
-    bigWord: "One and Only",
-    starring: "Heroine",
-    edition: "one piece dhaan Adhuvu mendal peice uh , duplicate illa",
-    seal: "Scroll for cake ✦ keep going ✦",
-    chips: ["Sirichu sirichu vayiru valikkum",],
-    photos: [
-      emptyPhoto("square", "Birthday cupcake"),
-      emptyPhoto("square", "Birthday balloons"),
-      emptyPhoto("square", "Birthday cake"),
-    ],
+    label: "The star of the day",
+    bigWord: "Birthday Star",
+    starring: "TODAY'S STAR",
+    edition: "Add a short personal tagline here",
+    seal: "A day to celebrate •",
+    chips: [],
+    photos: [],
   },
   wall: {
-    label: "Stolen Pics",
-    title: "Namma photo",
-    highlight: "wall-u",
-    intro: "Unkitta kettu vaangunadhu dhaan; paathutte irukkaadha, keela po!",
-    photos: WALL_SHAPES.map((s) => emptyPhoto(s)),
+    label: "MEMORY LANE",
+    title: "Photo",
+    highlight: "Wall",
+    intro: "Add a short invitation for guests to browse the photos.",
+    photos: [],
   },
   wishes: {
-    title: "Sister",
-    highlight: "wishes",
-    intro: "",
-    items: [
-      { title: "Always on your side", note: "Whatever life brings, your brother is one call away—even if he first asks, “What happened?”" },
-      { title: "More sibling laughs", note: "May we keep laughing at our silly jokes and stories nobody else understands." },
-      { title: "Adventures together", note: "More little trips, unexpected detours, and memories we will tease each other about later." },
-      { title: "Your biggest cheerleader", note: "May you chase every dream knowing your brother will always be proud of you." },
-      { title: "Fewer silly fights", note: "May our arguments be short, our make-ups quick, and your victory claims only slightly exaggerated." },
-      { title: "Cake, always", note: "May your birthday bring extra cake—and may your brother generously let you have the bigger slice." },
-    ],
+    title: "Birthday",
+    highlight: "Wishes",
+    intro: "Add a short introduction for the birthday wishes.",
+    items: [],
   },
   statement: {
-    heading: "Chinna moments-ku\nperiya celebration!",
-    big: "Innum oru Chinna level up",
-    coinTop: "Level",
-    coinBottom: "mass!",
-    note: "varusham pogapoga\ncarelessness mattum\nkuraiyala!",
-    photo: emptyPhoto("square", "A birthday treat"),
+    heading: "A day full of\nhappy moments",
+    big: "Make a wish",
+    coinTop: "Make",
+    coinBottom: "A Wish",
+    note: "Add a short birthday message here.",
+    photo: emptyPhoto("square", "Add a celebration photo"),
   },
   finale: {
-    greeting: "Dear {name}-u,",
-    title: "Oru",
-    highlight: "wish kelu",
-    message: "Kannai moodi oru periya aasai kelu, appuram button-a press pannu.Un responsibility Edhume illa Dhandama suthu!",
-    button: "Candle-a oothu",
-    buttonDone: "Wish poiduchu ✦ innoru round-aa?",
-    watermark: "Semma B-day",
-    footer: "Anboda senjadhu",
+    greeting: "Dear {name},",
+    title: "Make a",
+    highlight: "Wish",
+    message: "Write a final birthday message here.",
+    button: "Make a wish",
+    buttonDone: "Wish made!",
+    watermark: "Birthday wishes",
+    footer: "With love",
   },
   letter: {
-    kicker: "From one hackathon to family",
-    title: "To My Forever Kid",
-    description: "A birthday thank-you for the sister I found by chance.",
+    kicker: "A birthday message",
+    title: "A Letter for You",
+    description: "Add a personal subtitle or leave this blank.",
     paragraphs: [
-      "Funny how one random hackathon brought us together, and somehow, we ended up becoming this close. Who would've thought that an event where we were just two people who happened to cross paths would eventually give me a sister I never knew I needed? I never expected to find someone who would become such an important part of my life through something so random, but I'm genuinely glad it happened.",
-      "I don't think I've ever properly thanked you for all the little things you've done. Thank you for listening to my endless problems, tolerating my nonsense, hearing me out even when I struggle to put my thoughts into words, and putting up with all my random calls and conversations. Thank you for being someone I can talk to without having to think twice about what I'm going to say. There have been days when I had a lot going on in my head, and simply having someone who would listen made things feel a little easier. You might consider these things ordinary, but they have meant more to me than you probably realise.",
-      "I know I'm not always the easiest person to deal with, and I might not always express things properly, but I hope you know that I genuinely appreciate having you in my life. Somewhere along the way, you stopped being just someone I met at a hackathon and became family. And that's something I'll always be grateful for.",
-      "No matter how life changes, where we end up, how busy things get, or how often we get to talk, I hope that never changes the bond we've built. You will always have a special place in my life. And remember, you're forever my kid. Doesn't matter how old you grow, how independent you become, or how much you argue about it. That position is permanent, and unfortunately for you, there's no resignation option. 😂❤️",
-      "I genuinely wish you a life filled with happiness, peace, opportunities, and people who appreciate you for exactly who you are. I hope you achieve everything you've been dreaming of, get through every difficult phase with strength, and never have to question your worth. You deserve so many beautiful things in life.",
-      "And lastly, thank you for being you. I'm not sure if I say it enough, but you mean a lot to me. Out of all the unexpected things life has brought my way, meeting you and gaining a sister in you is definitely one of the things I'm most thankful for.",
-      "Happy Birthday once again, kiddo. Keep smiling, keep growing, and never lose that little bit of madness that makes you YOU. ❤️",
+      "Write a personal birthday message here. Share a favorite memory, what you appreciate about them, and your wishes for the year ahead.",
     ],
-    signature: "With all my love, always.",
+    signature: "With love,",
   },
   keepsake: {
     enabled: true,
-    photo: emptyPhoto("portrait", "Birthday portrait"),
-    wish: "Un life-la Happiness full-a irukkattum; tension vandha One phone call !",
-    poem: "May life always be as kind to you as you've been to the people around you, May you find a reason to smile even on your toughest days. I hope all your dreams find their way to you, And you always have someone to listen, just as you've listened to me.\n\nI'm glad that one random day brought us together, And even happier that a stranger became a sister. No matter where life takes us or how much time passes, You'll always be my kid, and I'll always be cheering for you. ❤️",
-    signature: "Dongley oda wishes",
+    photo: emptyPhoto("portrait", "Add a birthday portrait"),
+    wish: "Write a short birthday wish here.",
+    poem: "Add a personal message for the birthday card here.",
+    signature: "Your name",
   },
   birthdayAudio: { id: null },
   backgroundVideo: { id: null, opacity: 0.1, blendMode: "soft-light", blur: 2 },
@@ -165,43 +195,114 @@ export const photoUrl = (id: string) => `/api/public/photos/${id}`;
 
 // ---------- validation (used by the server before saving) ----------
 
-const text = (max: number) => z.string().max(max);
+const text = () => z.string();
 export const photoSchema = z.object({
-  id: z.string().regex(/^[a-f0-9]{24}$/).nullable(),
+  id: z
+    .string()
+    .regex(/^[a-f0-9]{24}$/)
+    .nullable(),
   w: z.number().int().min(0).max(40000),
   h: z.number().int().min(0).max(40000),
-  alt: text(200),
-  caption: text(240),
+  alt: text(),
+  caption: text(),
   shape: z.enum(SHAPES),
 });
 
 export const siteContentSchema = z.object({
-  name: text(60),
-  hero: z.object({ tagline: text(120), leftWord: text(30), badge: text(20), rightWord: text(30), line1: text(16), line2: text(16), sticker: text(80), hint: text(80) }),
-  pullTab: z.object({ hint: text(60), label: text(30), messages: z.array(text(60)).max(10) }),
-  ribbon: z.object({ phrase: text(200), photo: photoSchema }),
+  name: text(),
+  hero: z.object({
+    tagline: text(),
+    leftWord: text(),
+    badge: text(),
+    rightWord: text(),
+    line1: text(),
+    line2: text(),
+    sticker: text(),
+    hint: text(),
+  }),
+  pullTab: z.object({ hint: text(), label: text(), messages: z.array(text()) }),
+  ribbon: z.object({ phrase: text(), photo: photoSchema }),
   memories: z.object({
-    label: text(80), bigWord: text(20), starring: text(30), edition: text(60), seal: text(60),
-    chips: z.array(text(120)).max(8),
-    photos: z.array(photoSchema).length(MEMORY_PHOTO_COUNT),
+    label: text(),
+    bigWord: text(),
+    starring: text(),
+    edition: text(),
+    seal: text(),
+    chips: z.array(text()),
+    photos: z.array(photoSchema),
   }),
-  wall: z.object({ label: text(60), title: text(30), highlight: text(30), intro: text(300), photos: z.array(photoSchema).max(MAX_WALL_PHOTOS) }),
+  wall: z.object({
+    label: text(),
+    title: text(),
+    highlight: text(),
+    intro: text(),
+    photos: z.array(photoSchema),
+  }),
   wishes: z.object({
-    title: text(30), highlight: text(30), intro: text(300),
-    items: z.array(z.object({ title: text(30), note: text(200) })).min(MIN_WISHES).max(MAX_WISHES),
+    title: text(),
+    highlight: text(),
+    intro: text(),
+    items: z.array(z.object({ title: text(), note: text() })),
   }),
-  statement: z.object({ heading: text(120), big: text(60), coinTop: text(14), coinBottom: text(14), note: text(120), photo: photoSchema }),
-  finale: z.object({ greeting: text(80), title: text(30), highlight: text(30), message: text(400), button: text(40), buttonDone: text(40), watermark: text(30), footer: text(60) }),
-  letter: z.object({ kicker: text(100), title: text(100), description: text(200), paragraphs: z.array(text(1500)).min(1).max(10), signature: text(120) }),
-  keepsake: z.object({ enabled: z.boolean(), photo: photoSchema, wish: text(160), poem: text(500), signature: text(50) }),
-  birthdayAudio: z.object({ id: z.string().regex(/^[a-f0-9]{24}$/).nullable() }),
+  statement: z.object({
+    heading: text(),
+    big: text(),
+    coinTop: text(),
+    coinBottom: text(),
+    note: text(),
+    photo: photoSchema,
+  }),
+  finale: z.object({
+    greeting: text(),
+    title: text(),
+    highlight: text(),
+    message: text(),
+    button: text(),
+    buttonDone: text(),
+    watermark: text(),
+    footer: text(),
+  }),
+  letter: z.object({
+    kicker: text(),
+    title: text(),
+    description: text(),
+    paragraphs: z.array(text()),
+    signature: text(),
+  }),
+  keepsake: z.object({
+    enabled: z.boolean(),
+    photo: photoSchema,
+    wish: text(),
+    poem: text(),
+    signature: text(),
+  }),
+  birthdayAudio: z.object({
+    id: z
+      .string()
+      .regex(/^[a-f0-9]{24}$/)
+      .nullable(),
+  }),
   backgroundVideo: z.object({
-    id: z.string().regex(/^[a-f0-9]{24}$/).nullable(),
+    id: z
+      .string()
+      .regex(/^[a-f0-9]{24}$/)
+      .nullable(),
     opacity: z.number().min(0).max(0.6),
-    blendMode: z.enum(["normal", "multiply", "screen", "overlay", "soft-light", "hard-light", "lighten", "darken"]),
+    blendMode: z.enum([
+      "normal",
+      "multiply",
+      "screen",
+      "overlay",
+      "soft-light",
+      "hard-light",
+      "lighten",
+      "darken",
+    ]),
     blur: z.number().min(0).max(24),
   }),
-  pages: z.array(z.object({ slug: z.string().regex(/^[a-z0-9]+(?:-[a-z0-9]+)*$/).max(60), title: text(80).min(1), body: text(5000) })).max(30),
+  pages: z.array(
+    z.object({ slug: z.string().regex(/^[a-z0-9]+(?:-[a-z0-9]+)*$/), title: text(), body: text() }),
+  ),
 });
 
 // ---------- normalising stored data ----------
@@ -223,7 +324,10 @@ function mergeInto<T>(fallback: T, raw: Json): T {
     if (!raw || typeof raw !== "object" || Array.isArray(raw)) return fallback;
     const out: Record<string, unknown> = {};
     for (const key of Object.keys(fallback as object)) {
-      out[key] = mergeInto((fallback as Record<string, unknown>)[key], (raw as Record<string, unknown>)[key]);
+      out[key] = mergeInto(
+        (fallback as Record<string, unknown>)[key],
+        (raw as Record<string, unknown>)[key],
+      );
     }
     return out as T;
   }
@@ -232,19 +336,25 @@ function mergeInto<T>(fallback: T, raw: Json): T {
 
 export function normalizeContent(raw: Json): SiteContent {
   const c = mergeInto(DEFAULT_CONTENT, raw);
-  const photos = c.memories.photos.slice(0, MEMORY_PHOTO_COUNT);
-  while (photos.length < MEMORY_PHOTO_COUNT) photos.push(DEFAULT_CONTENT.memories.photos[photos.length]!);
-  c.memories.photos = photos;
-  c.wall.photos = c.wall.photos.slice(0, MAX_WALL_PHOTOS).map((p) => ({ ...p, shape: SHAPES.includes(p.shape) ? p.shape : "portrait" }));
-  let items = c.wishes.items.slice(0, MAX_WISHES);
-  if (items.length < MIN_WISHES) items = DEFAULT_CONTENT.wishes.items;
-  c.wishes.items = items;
-  if (!c.name.trim()) c.name = DEFAULT_CONTENT.name;
+  c.memories.photos = c.memories.photos.map((p) => ({
+    ...p,
+    shape: SHAPES.includes(p.shape) ? p.shape : "portrait",
+  }));
+  c.wall.photos = c.wall.photos.map((p) => ({
+    ...p,
+    shape: SHAPES.includes(p.shape) ? p.shape : "portrait",
+  }));
   return c;
 }
 
 /** Every photo id the content points at (used to clean up unused uploads). */
 export function referencedPhotoIds(c: SiteContent): string[] {
-  const all = [c.ribbon.photo, c.statement.photo, c.keepsake.photo, ...c.memories.photos, ...c.wall.photos];
+  const all = [
+    c.ribbon.photo,
+    c.statement.photo,
+    c.keepsake.photo,
+    ...c.memories.photos,
+    ...c.wall.photos,
+  ];
   return all.flatMap((p) => (p.id ? [p.id] : []));
 }

@@ -48,8 +48,9 @@ function Disc({
 export function WishWheel() {
   const { wishes } = useSiteContent();
   const items = wishes.items;
-  const step = 360 / items.length;
   const [active, setActive] = useState(0);
+  if (items.length === 0) return null;
+  const step = 360 / items.length;
   const go = (d: number) => setActive((a) => (a + d + items.length) % items.length);
   const w = items[active] ?? items[0]!;
 

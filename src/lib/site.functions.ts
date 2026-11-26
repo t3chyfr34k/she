@@ -4,7 +4,6 @@ import { z } from "zod";
 import { Binary, ObjectId } from "mongodb";
 import {
   DEFAULT_CONTENT,
-  MAX_WALL_PHOTOS,
   normalizeContent,
   referencedPhotoIds,
   siteContentSchema,
@@ -134,7 +133,6 @@ export const getSiteContent = createServerFn({ method: "GET" })
         const id = record._id.toHexString();
         if (linkedIds.has(id) || (record.sha256 && linkedHashes.has(record.sha256))) continue;
         if (photoWallClearedAt && record.createdAt <= photoWallClearedAt) continue;
-        if (content.wall.photos.length >= MAX_WALL_PHOTOS) break;
         const photo: Photo = {
           id,
           w: record.w,

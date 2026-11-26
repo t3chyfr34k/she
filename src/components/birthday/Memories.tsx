@@ -132,8 +132,9 @@ export function Memories({ name }: { name: string }) {
         </div>
       </div>
 
-      {[cupcake, balloons, cake].map((fallback, i) => {
-        const photo = memories.photos[i]!;
+      {memories.photos.map((photo, i) => {
+        const slot = i % 3;
+        const fallback = [cupcake, balloons, cake][slot]!;
         const src = photo.id ? photoUrl(photo.id) : fallback;
         const positions = [
           "left-[3%] top-[36%] z-[4] w-[38vw] max-w-[300px]",
@@ -158,10 +159,10 @@ export function Memories({ name }: { name: string }) {
             width={photo.w || 900}
             height={photo.h || 900}
             progress={p}
-            range={ranges[i]!}
-            from={tilts[i]![0]!}
-            to={tilts[i]![1]!}
-            className={positions[i]!}
+            range={ranges[slot]!}
+            from={tilts[slot]![0]!}
+            to={tilts[slot]![1]!}
+            className={positions[slot]!}
           />
         );
       })}
