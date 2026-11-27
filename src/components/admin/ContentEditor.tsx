@@ -845,18 +845,51 @@ export function ContentEditor({
     setNotice("Clean template loaded. Select Save changes to publish it.");
   }
 
-  async function uploadWallPhotos(event: React.ChangeEvent<HTMLInputElement>) {
+  function assignUploadedPhotos(photos: Photo[]) {
+    const randomized = [...photos];
+    for (let index = randomized.length - 1; index > 0; index--) {
+      const swapIndex = Math.floor(Math.random() * (index + 1));
+      [randomized[index], randomized[swapIndex]] = [randomized[swapIndex]!, randomized[index]!];
+    }
+    setDraft((old) => {
+      const next = structuredClone(old);
+      const makePhoto = (file: Photo | undefined, current: Photo): Photo =>
+        file
+          ? { ...current, id: file.id, w: file.w, h: file.h, alt: file.alt, shape: file.shape }
+          : { ...current, id: null, w: 0, h: 0 };
+      next.ribbon.photo = makePhoto(randomized[0], old.ribbon.photo);
+      next.statement.photo = makePhoto(randomized[1], old.statement.photo);
+      next.keepsake.photo = makePhoto(randomized[2], old.keepsake.photo);
+      const galleryPhotos = randomized.slice(3);
+      next.wall.photos = galleryPhotos.filter((_, index) => index % 2 === 0);
+      next.memories.photos = galleryPhotos.filter((_, index) => index % 2 === 1);
+      return next;
+    });
+  }
+
+  async function uploadPhotoBatch(event: React.ChangeEvent<HTMLInputElement>) {
     const input = event.currentTarget;
     const files = Array.from(input.files ?? []);
     if (!files.length) return;
     const selected = files;
     const uploaded: Photo[] = [];
+    const seenFiles = new Set<string>();
+    let skippedDuplicates = 0;
     setBulkBusy(true);
     setNotice("");
     try {
       for (let index = 0; index < selected.length; index++) {
         const file = selected[index]!;
-        setNotice(`Uploading photo ${index + 1} of ${selected.length} to MongoDB…`);
+        setNotice(`Checking and uploading photo ${index + 1} of ${selected.length}…`);
+        const digest = await crypto.subtle.digest("SHA-256", await file.arrayBuffer());
+        const fingerprint = Array.from(new Uint8Array(digest), (byte) =>
+          byte.toString(16).padStart(2, "0"),
+        ).join("");
+        if (seenFiles.has(fingerprint)) {
+          skippedDuplicates++;
+          continue;
+        }
+        seenFiles.add(fingerprint);
         const bitmap = await createImageBitmap(file);
         try {
           const form = new FormData();
@@ -878,16 +911,16 @@ export function ContentEditor({
           bitmap.close();
         }
       }
-      setDraft((old) => {
-        const current = old.wall.photos.filter((photo) => photo.id);
-        return { ...old, wall: { ...old.wall, photos: [...current, ...uploaded] } };
-      });
+      // Shuffle unique uploads so successive batches don't always land in the same slots.
+      assignUploadedPhotos(uploaded);
+      const missing = Math.max(0, 3 - uploaded.length);
       setNotice(
-        `${uploaded.length} photo${uploaded.length === 1 ? "" : "s"} uploaded to MongoDB. Select Save changes to link them to the website.`,
+        `${uploaded.length} unique photo${uploaded.length === 1 ? "" : "s"} uploaded. The first 3 fill the ribbon, statement, and keepsake; extra photos are split between Memories and the Photo Wall without reusing an upload.${skippedDuplicates ? ` Skipped ${skippedDuplicates} exact duplicate file${skippedDuplicates === 1 ? "" : "s"}.` : ""}${missing ? ` Add ${missing} more distinct photo${missing === 1 ? "" : "s"} to fill every dedicated photo slot.` : ""} Select Save changes to publish.`,
       );
     } catch (error) {
+      if (uploaded.length) assignUploadedPhotos(uploaded);
       setNotice(
-        `${uploaded.length} uploaded so far. ${error instanceof Error ? error.message : "The next upload failed."} Save changes to link uploaded photos.`,
+        `${uploaded.length} photo${uploaded.length === 1 ? "" : "s"} uploaded and assigned so far. ${error instanceof Error ? error.message : "The next upload failed."}${uploaded.length ? " Select Save changes to publish them." : ""}`,
       );
     } finally {
       setBulkBusy(false);
@@ -962,21 +995,23 @@ export function ContentEditor({
           </p>
         </div>
         <div className="mt-4 rounded-xl border border-dashed border-forest/40 bg-mint p-4">
-          <label htmlFor="wall-photo-upload" className="block font-bold text-forest-deep">
-            Upload a batch to the photo wall
+          <label htmlFor="bulk-photo-upload" className="block font-bold text-forest-deep">
+            Bulk upload and assign photos
           </label>
           <p className="mt-1 text-sm text-slate-700">
-            Select multiple JPG, PNG, WebP, or GIF files. Each must be at most 8 MB. Uploads are
-            added to MongoDB and shown in the public photo wall after saving.
+            Select multiple JPG, PNG, WebP, or GIF files (8 MB max each). Three different photos
+            fill the ribbon photo, statement photo, and keepsake photo. Any extras are randomly distributed
+            between the Photo Wall and Memories, with each uploaded image used once. Exact duplicate
+            files in the batch are skipped. You can still replace or edit every image below.
           </p>
           <div className="mt-3 flex flex-wrap items-center gap-3">
             <input
-              id="wall-photo-upload"
+              id="bulk-photo-upload"
               type="file"
               multiple
               accept="image/jpeg,image/png,image/webp,image/gif"
               disabled={bulkBusy || clearingWall}
-              onChange={uploadWallPhotos}
+              onChange={uploadPhotoBatch}
               className="block min-w-0 flex-1 text-sm"
             />
             <button
@@ -989,8 +1024,13 @@ export function ContentEditor({
             </button>
           </div>
           <p className="mt-2 text-xs text-slate-600">
-            Clearing removes wall uploads from MongoDB. Photos referenced by other sections are
-            preserved. After clearing, choose a fresh batch and save.
+            {(() => {
+              const slots = [draft.ribbon.photo, draft.statement.photo, draft.keepsake.photo, ...draft.memories.photos, ...draft.wall.photos];
+              const assigned = slots.flatMap((photo) => (photo.id ? [photo.id] : []));
+              const unique = new Set(assigned).size;
+              const repeats = assigned.length - unique;
+              return `${slots.length} image holders total; ${assigned.length} filled with ${unique} distinct photo${unique === 1 ? "" : "s"}${repeats ? ` (${repeats} repeated assignment${repeats === 1 ? "" : "s"})` : ""}. Upload ${slots.length} distinct photos to give every current holder a different image. Individual photo uploads below remain available.`;
+            })()}
           </p>
         </div>
         {sections.map((key) => (
