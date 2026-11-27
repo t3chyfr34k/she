@@ -55,6 +55,7 @@ function isPublicRequest(request: Request, pathname: string): boolean {
   if (pathname === "/health" || pathname === "/" || pathname === "/admin" || pathname === "/wishes")
     return readOnly;
   if (pathname === "/api/birthday-access") return request.method === "POST";
+  if (pathname === "/api/photo-wall-access") return request.method === "POST";
   if (pathname === "/api/public/wishes") return request.method === "POST";
   if (pathname.startsWith("/api/public/")) return readOnly;
   if (
