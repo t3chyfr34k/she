@@ -38,9 +38,129 @@ export type BackgroundVideo = {
   blur: number;
 };
 export type BirthdayAudio = { id: string | null };
+export const PALETTE_KEYS = [
+  "mint",
+  "mintDeep",
+  "forest",
+  "forestDeep",
+  "jade",
+  "cream",
+  "gold",
+  "goldDeep",
+  "tape",
+] as const;
+export type PaletteKey = (typeof PALETTE_KEYS)[number];
+export type ColorPalette = Record<PaletteKey, string>;
+
+export const DEFAULT_PALETTE: ColorPalette = {
+  mint: "#e9f6f0",
+  mintDeep: "#c7e7d9",
+  forest: "#245b4c",
+  forestDeep: "#17483e",
+  jade: "#429d7c",
+  cream: "#fffaf3",
+  gold: "#f4d06f",
+  goldDeep: "#b47c43",
+  tape: "#e5d7b6",
+};
+
+export const PALETTE_PRESETS: { name: string; palette: ColorPalette }[] = [
+  { name: "Garden green", palette: DEFAULT_PALETTE },
+  {
+    name: "Rose party",
+    palette: {
+      mint: "#f8e8ee",
+      mintDeep: "#edc7d5",
+      forest: "#653448",
+      forestDeep: "#432232",
+      jade: "#bd6d8c",
+      cream: "#fff7f5",
+      gold: "#f6c76b",
+      goldDeep: "#b37a45",
+      tape: "#ead5c0",
+    },
+  },
+  {
+    name: "Ocean breeze",
+    palette: {
+      mint: "#e6f5fa",
+      mintDeep: "#c4e4ee",
+      forest: "#15516b",
+      forestDeep: "#103749",
+      jade: "#238aa0",
+      cream: "#f8fcff",
+      gold: "#f5ca67",
+      goldDeep: "#bd8138",
+      tape: "#d9e4e7",
+    },
+  },
+  {
+    name: "Lavender dream",
+    palette: {
+      mint: "#f0eafb",
+      mintDeep: "#d8c9ee",
+      forest: "#51416f",
+      forestDeep: "#37294f",
+      jade: "#8871b5",
+      cream: "#fcf9ff",
+      gold: "#f2cf79",
+      goldDeep: "#ac784b",
+      tape: "#e3d9c5",
+    },
+  },
+];
+
+export function paletteCssVariables(palette: ColorPalette): Record<string, string> {
+  const tokens = Object.fromEntries(
+    PALETTE_KEYS.map((key) => [
+      `--${key.replace(/[A-Z]/g, (letter) => `-${letter.toLowerCase()}`)}`,
+      palette[key],
+    ]),
+  );
+  return {
+    ...tokens,
+    "--background": palette.mint,
+    "--foreground": palette.forest,
+    "--card": palette.cream,
+    "--card-foreground": palette.forest,
+    "--popover": palette.cream,
+    "--popover-foreground": palette.forest,
+    "--primary": palette.forest,
+    "--primary-foreground": palette.mint,
+    "--secondary": palette.jade,
+    "--secondary-foreground": palette.forestDeep,
+    "--muted": palette.mintDeep,
+    "--muted-foreground": palette.forest,
+    "--accent": palette.gold,
+    "--accent-foreground": palette.forestDeep,
+    "--border": `color-mix(in oklab, ${palette.forest} 24%, transparent)`,
+    "--input": `color-mix(in oklab, ${palette.forest} 30%, transparent)`,
+    "--ring": palette.jade,
+    "--sidebar": palette.cream,
+    "--sidebar-foreground": palette.forest,
+    "--sidebar-primary": palette.forest,
+    "--sidebar-primary-foreground": palette.mint,
+    "--sidebar-accent": palette.mint,
+    "--sidebar-accent-foreground": palette.forest,
+    "--sidebar-border": `color-mix(in oklab, ${palette.forest} 24%, transparent)`,
+    "--sidebar-ring": palette.jade,
+    "--shadow-sticker-value": `0 2px 0 color-mix(in oklab, ${palette.forestDeep} 25%, transparent), 0 18px 40px -18px color-mix(in oklab, ${palette.forestDeep} 42%, transparent)`,
+    "--shadow-lift-value": `10px 12px 0 color-mix(in oklab, ${palette.forestDeep} 25%, transparent)`,
+  };
+}
+
+export function normalizePalette(raw: unknown): ColorPalette {
+  const source = raw && typeof raw === "object" ? (raw as Record<string, unknown>) : {};
+  const entries = PALETTE_KEYS.map((key) => {
+    const value = source[key];
+    return [key, typeof value === "string" && /^#[\da-fA-F]{6}$/.test(value) ? value : DEFAULT_PALETTE[key]];
+  });
+  return Object.fromEntries(entries) as ColorPalette;
+}
 
 export type SiteContent = {
   name: string;
+  palette: ColorPalette;
   hero: {
     tagline: string;
     leftWord: string;
@@ -106,6 +226,7 @@ export const emptyPhoto = (shape: Shape = "portrait", alt = "", caption = ""): P
 
 export const DEFAULT_CONTENT: SiteContent = {
   name: "Birthday Star",
+  palette: DEFAULT_PALETTE,
   hero: {
     tagline: "A day made for celebrating",
     leftWord: "Today",
@@ -210,6 +331,17 @@ export const photoSchema = z.object({
 
 export const siteContentSchema = z.object({
   name: text(),
+  palette: z.object({
+    mint: z.string().regex(/^#[\da-fA-F]{6}$/),
+    mintDeep: z.string().regex(/^#[\da-fA-F]{6}$/),
+    forest: z.string().regex(/^#[\da-fA-F]{6}$/),
+    forestDeep: z.string().regex(/^#[\da-fA-F]{6}$/),
+    jade: z.string().regex(/^#[\da-fA-F]{6}$/),
+    cream: z.string().regex(/^#[\da-fA-F]{6}$/),
+    gold: z.string().regex(/^#[\da-fA-F]{6}$/),
+    goldDeep: z.string().regex(/^#[\da-fA-F]{6}$/),
+    tape: z.string().regex(/^#[\da-fA-F]{6}$/),
+  }),
   hero: z.object({
     tagline: text(),
     leftWord: text(),
@@ -336,6 +468,7 @@ function mergeInto<T>(fallback: T, raw: Json): T {
 
 export function normalizeContent(raw: Json): SiteContent {
   const c = mergeInto(DEFAULT_CONTENT, raw);
+  c.palette = normalizePalette(c.palette);
   c.memories.photos = c.memories.photos.map((p) => ({
     ...p,
     shape: SHAPES.includes(p.shape) ? p.shape : "portrait",

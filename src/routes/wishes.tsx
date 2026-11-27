@@ -234,7 +234,7 @@ function WishesPage() {
               maxLength={50}
               autoComplete="name"
               placeholder="Enter your full, official name"
-              className="mt-2 w-full rounded-xl border border-forest/20 bg-white px-4 py-3 text-base outline-none transition focus:border-jade focus:ring-2 focus:ring-jade/20"
+              className="mt-2 w-full rounded-xl border border-forest/20 bg-cream px-4 py-3 text-base outline-none transition focus:border-jade focus:ring-2 focus:ring-jade/20"
             />
 
             <label className="label-chip mt-5 block text-sm" htmlFor="wish-message">
@@ -247,13 +247,13 @@ function WishesPage() {
               maxLength={700}
               rows={5}
               placeholder="Write something from the heart…"
-              className="mt-2 w-full resize-y rounded-xl border border-forest/20 bg-white px-4 py-3 text-base leading-relaxed outline-none transition focus:border-jade focus:ring-2 focus:ring-jade/20"
+              className="mt-2 w-full resize-y rounded-xl border border-forest/20 bg-cream px-4 py-3 text-base leading-relaxed outline-none transition focus:border-jade focus:ring-2 focus:ring-jade/20"
             />
 
             <label className="label-chip mt-5 block text-sm" htmlFor="wish-photo">
               Your photo <span aria-hidden="true">*</span>
             </label>
-            <div className="mt-2 flex items-center gap-4 rounded-xl border border-dashed border-forest/30 bg-white p-3">
+            <div className="mt-2 flex items-center gap-4 rounded-xl border border-dashed border-forest/30 bg-cream p-3">
               {photoPreview ? (
                 <img
                   src={photoPreview}
@@ -290,7 +290,7 @@ function WishesPage() {
             </div>
 
             <section
-              className="mt-5 rounded-2xl border border-forest/15 bg-white p-4 sm:p-5"
+              className="mt-5 rounded-2xl border border-forest/15 bg-cream p-4 sm:p-5"
               aria-labelledby="wish-audio-heading"
             >
               <div className="flex items-center gap-3">
@@ -405,7 +405,7 @@ function WishesPage() {
                 (optional)
               </span>
             </label>
-            <div className="mt-2 flex items-center gap-3 rounded-xl border border-forest/15 bg-white p-3">
+            <div className="mt-2 flex items-center gap-3 rounded-xl border border-forest/15 bg-cream p-3">
               <Video className="h-6 w-6 shrink-0 text-jade" aria-hidden="true" />
               <div className="min-w-0 flex-1">
                 <input

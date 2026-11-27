@@ -27,6 +27,7 @@ for (const key of [
   "SESSION_SECRET",
   "BIRTHDAY_PASSCODE",
   "BIRTHDAY_ACCESS_SECRET",
+  "PHOTO_WALL_PASSCODE",
 ]) {
   if (!process.env[key] && localEnv[key]) process.env[key] = localEnv[key];
 }

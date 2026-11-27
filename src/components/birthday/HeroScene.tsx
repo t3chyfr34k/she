@@ -4,16 +4,33 @@ import { useEffect, useMemo, useRef, useState } from "react";
 import * as THREE from "three";
 import { fireConfetti } from "./confetti";
 
-// three.js materials need concrete colors; these mirror the CSS tokens.
+// three.js materials need concrete colors; read the active CSS tokens from the page.
+function readThemeColor(token: string, fallback: string) {
+  if (typeof document === "undefined") return fallback;
+  const themeRoot =
+    document.querySelector<HTMLElement>("[data-theme-root]") ?? document.documentElement;
+  return getComputedStyle(themeRoot).getPropertyValue(`--${token}`).trim() || fallback;
+}
+
 const C = {
-  mint: "#e2f3eb",
-  mintDeep: "#b5ddca",
-  jade: "#3da783",
-  forest: "#174b3c",
-  cream: "#fff9f0",
-  gold: "#f0c765",
-  goldDeep: "#b77a32",
+  mint: readThemeColor("mint", "#e2f3eb"),
+  mintDeep: readThemeColor("mint-deep", "#b5ddca"),
+  jade: readThemeColor("jade", "#3da783"),
+  forest: readThemeColor("forest", "#174b3c"),
+  cream: readThemeColor("cream", "#fff9f0"),
+  gold: readThemeColor("gold", "#f0c765"),
+  goldDeep: readThemeColor("gold-deep", "#b77a32"),
 };
+
+function refreshThemeColors() {
+  C.mint = readThemeColor("mint", "#e2f3eb");
+  C.mintDeep = readThemeColor("mint-deep", "#b5ddca");
+  C.jade = readThemeColor("jade", "#3da783");
+  C.forest = readThemeColor("forest", "#174b3c");
+  C.cream = readThemeColor("cream", "#fff9f0");
+  C.gold = readThemeColor("gold", "#f0c765");
+  C.goldDeep = readThemeColor("gold-deep", "#b77a32");
+}
 
 function Flame({ lit, seed }: { lit: boolean; seed: number }) {
   const ref = useRef<THREE.Mesh>(null);
@@ -75,7 +92,7 @@ function Cake() {
           color: [C.gold, C.forest, C.cream, C.jade][i % 4] ?? C.gold,
         };
       }),
-    [],
+    [C.gold, C.forest, C.cream, C.jade],
   );
   const dollops = useMemo(() => Array.from({ length: 16 }, (_, i) => (i / 16) * Math.PI * 2), []);
   const drips = useMemo(
@@ -87,7 +104,7 @@ function Cake() {
       const a = (i / 5) * Math.PI * 2 + 0.3;
       return { pos: [Math.cos(a) * 0.45, 0, Math.sin(a) * 0.45] as [number, number, number], color: i % 2 ? C.jade : C.goldDeep };
     }),
-    [],
+    [C.jade, C.goldDeep],
   );
 
   useFrame((state, dt) => {
@@ -243,6 +260,7 @@ function Parallax({ children }: { children: React.ReactNode }) {
 }
 
 export default function HeroScene({ onReady }: { onReady?: () => void }) {
+  refreshThemeColors();
   const [visible, setVisible] = useState(true);
   const hostRef = useRef<HTMLDivElement>(null);
 

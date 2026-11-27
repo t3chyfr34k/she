@@ -1,10 +1,14 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, type CSSProperties } from "react";
 import { BirthdayWishManager } from "@/components/admin/BirthdayWishManager";
 import {
   DEFAULT_CONTENT,
+  PALETTE_KEYS,
+  PALETTE_PRESETS,
   emptyPhoto,
+  paletteCssVariables,
   photoUrl,
   type BackgroundVideo,
+  type ColorPalette,
   type Photo,
   type SiteContent,
 } from "@/lib/site-content";
@@ -30,7 +34,7 @@ type EditorProps = {
 };
 
 const fieldClass =
-  "mt-1 w-full rounded-lg border border-forest-deep/20 bg-white px-3 py-2 text-sm text-slate-900 outline-none focus:border-forest focus:ring-2 focus:ring-forest/20";
+  "mt-1 w-full rounded-lg border border-forest-deep/20 bg-cream px-3 py-2 text-sm text-slate-900 outline-none focus:border-forest focus:ring-2 focus:ring-forest/20";
 const buttonClass =
   "rounded-lg border border-forest-deep/20 px-3 py-2 text-sm font-semibold text-forest-deep hover:bg-mint";
 const EDITABLE_SECTIONS = [
@@ -278,7 +282,7 @@ function RenderDeploymentInfo({ token }: { token: string }) {
   }, [token]);
 
   return (
-    <section className="mb-6 rounded-2xl border bg-white p-4 shadow-sm sm:p-6">
+    <section className="mb-6 rounded-2xl border bg-cream p-4 shadow-sm sm:p-6">
       <h2 className="text-lg font-bold text-slate-900">Render deployment</h2>
       <p className="mt-1 text-sm text-slate-600">
         Read-only details for the deployment serving this page.
@@ -695,7 +699,7 @@ function ValueEditor({ label, value, path, token, onChange, onNotice }: EditorPr
         {help && <p className="mb-3 text-xs text-slate-600">{help}</p>}
         <div className="space-y-2">
           {value.map((item, index) => (
-            <div key={index} className="rounded-lg bg-slate-50 p-2">
+            <div key={index} className="rounded-lg bg-mint p-2">
               <div className="flex justify-end">
                 <button
                   type="button"
@@ -819,6 +823,10 @@ export function ContentEditor({
   const sections = EDITABLE_SECTIONS.filter((key) => key in draft);
   const onChange = (path: PathPart[], value: unknown) =>
     setDraft((old) => updateAt(old, path, value) as SiteContent);
+
+  useEffect(() => {
+    window.dispatchEvent(new CustomEvent("birthday-palette-change", { detail: draft.palette }));
+  }, [draft.palette]);
 
   async function save() {
     setBusy(true);
@@ -949,8 +957,11 @@ export function ContentEditor({
   }
 
   return (
-    <div className="mx-auto max-w-5xl px-4 py-6 sm:px-8">
-      <header className="sticky top-0 z-10 -mx-4 mb-6 flex items-center justify-between gap-3 border-b bg-white/95 px-4 py-3 backdrop-blur sm:-mx-8 sm:px-8">
+    <div
+      className="mx-auto max-w-5xl px-4 py-6 sm:px-8"
+      style={paletteCssVariables(draft.palette) as unknown as CSSProperties}
+    >
+      <header className="sticky top-0 z-10 -mx-4 mb-6 flex items-center justify-between gap-3 border-b bg-cream/95 px-4 py-3 backdrop-blur sm:-mx-8 sm:px-8">
         <div>
           <h1 className="text-xl font-black text-forest-deep">Birthday site editor</h1>
           <p className="text-xs text-slate-600">Changes save to MongoDB.</p>
@@ -974,19 +985,64 @@ export function ContentEditor({
           {notice}
         </p>
       )}
-      <details className="mb-3 rounded-xl border bg-white p-3">
+      <details className="mb-3 rounded-xl border bg-cream p-3">
         <summary className="cursor-pointer font-semibold text-forest-deep">
           Manage wishes submitted by visitors
         </summary>
         <BirthdayWishManager token={token} />
       </details>
-      <details className="mb-6 rounded-xl border bg-white p-3">
+      <details className="mb-6 rounded-xl border bg-cream p-3">
         <summary className="cursor-pointer font-semibold text-forest-deep">
           Deployment details
         </summary>
         <RenderDeploymentInfo token={token} />
       </details>
-      <section className="mb-6 rounded-2xl border bg-white p-4 shadow-sm sm:p-6">
+      <section className="mb-6 rounded-2xl border border-forest/15 bg-cream p-4 shadow-sm sm:p-6">
+        <h2 className="text-lg font-bold text-forest-deep">Color palette</h2>
+        <p className="mt-1 text-sm text-forest/80">
+          Choose a ready-made palette or adjust each color. The preview updates here; Save changes
+          stores it in MongoDB for the birthday page, admin, and wish page.
+        </p>
+        <div className="mt-4 flex flex-wrap gap-2">
+          {PALETTE_PRESETS.map((preset) => (
+            <button
+              key={preset.name}
+              type="button"
+              onClick={() => onChange(["palette"], structuredClone(preset.palette))}
+              className="flex items-center gap-2 rounded-full border border-forest/20 bg-cream px-3 py-2 text-sm font-semibold text-forest-deep hover:border-jade"
+            >
+              <span className="flex overflow-hidden rounded-full">
+                {["forest", "mint", "gold", "cream"].map((key) => (
+                  <span
+                    key={key}
+                    className="h-4 w-4"
+                    style={{ backgroundColor: preset.palette[key as keyof ColorPalette] }}
+                  />
+                ))}
+              </span>
+              {preset.name}
+            </button>
+          ))}
+        </div>
+        <div className="mt-5 grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
+          {PALETTE_KEYS.map((key) => (
+            <label
+              key={key}
+              className="flex items-center justify-between gap-3 rounded-xl border border-forest/10 bg-cream px-3 py-2 text-sm font-semibold capitalize text-forest-deep"
+            >
+              <span>{key.replace(/[A-Z]/g, (letter) => ` ${letter.toLowerCase()}`)}</span>
+              <input
+                type="color"
+                value={draft.palette[key]}
+                onChange={(event) => onChange(["palette", key], event.currentTarget.value)}
+                aria-label={`${key} palette color`}
+                className="h-9 w-12 cursor-pointer rounded border-0 bg-transparent p-0"
+              />
+            </label>
+          ))}
+        </div>
+      </section>
+      <section className="mb-6 rounded-2xl border bg-cream p-4 shadow-sm sm:p-6">
         <h2 className="text-lg font-bold text-slate-900">Birthday page content</h2>
         <div className="flex flex-wrap items-start justify-between gap-3">
           <p className="text-sm text-slate-600">

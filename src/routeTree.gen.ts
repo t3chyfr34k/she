@@ -14,6 +14,7 @@ import { Route as AccessRouteImport } from './routes/access'
 import { Route as AdminRouteImport } from './routes/admin'
 import { Route as WishesRouteImport } from './routes/wishes'
 import { Route as ApiBirthdayAccessRouteImport } from './routes/api/birthday-access'
+import { Route as ApiPhotoWallAccessRouteImport } from './routes/api/photo-wall-access'
 import { Route as PSlugRouteImport } from './routes/p.$slug'
 import { Route as ApiPublicWishesRouteImport } from './routes/api/public/wishes'
 import { Route as ApiPublicBackgroundVideoIdRouteImport } from './routes/api/public/background-video/$id'
@@ -44,6 +45,11 @@ const WishesRoute = WishesRouteImport.update({
 const ApiBirthdayAccessRoute = ApiBirthdayAccessRouteImport.update({
   id: '/api/birthday-access',
   path: '/api/birthday-access',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ApiPhotoWallAccessRoute = ApiPhotoWallAccessRouteImport.update({
+  id: '/api/photo-wall-access',
+  path: '/api/photo-wall-access',
   getParentRoute: () => rootRouteImport,
 } as any)
 const PSlugRoute = PSlugRouteImport.update({
@@ -85,6 +91,7 @@ export interface FileRoutesByFullPath {
   '/admin': typeof AdminRoute
   '/wishes': typeof WishesRoute
   '/api/birthday-access': typeof ApiBirthdayAccessRoute
+  '/api/photo-wall-access': typeof ApiPhotoWallAccessRoute
   '/p/$slug': typeof PSlugRoute
   '/api/public/wishes': typeof ApiPublicWishesRoute
   '/api/public/background-video/$id': typeof ApiPublicBackgroundVideoIdRoute
@@ -98,6 +105,7 @@ export interface FileRoutesByTo {
   '/admin': typeof AdminRoute
   '/wishes': typeof WishesRoute
   '/api/birthday-access': typeof ApiBirthdayAccessRoute
+  '/api/photo-wall-access': typeof ApiPhotoWallAccessRoute
   '/p/$slug': typeof PSlugRoute
   '/api/public/wishes': typeof ApiPublicWishesRoute
   '/api/public/background-video/$id': typeof ApiPublicBackgroundVideoIdRoute
@@ -112,6 +120,7 @@ export interface FileRoutesById {
   '/admin': typeof AdminRoute
   '/wishes': typeof WishesRoute
   '/api/birthday-access': typeof ApiBirthdayAccessRoute
+  '/api/photo-wall-access': typeof ApiPhotoWallAccessRoute
   '/p/$slug': typeof PSlugRoute
   '/api/public/wishes': typeof ApiPublicWishesRoute
   '/api/public/background-video/$id': typeof ApiPublicBackgroundVideoIdRoute
@@ -127,6 +136,7 @@ export interface FileRouteTypes {
     | '/admin'
     | '/wishes'
     | '/api/birthday-access'
+    | '/api/photo-wall-access'
     | '/p/$slug'
     | '/api/public/wishes'
     | '/api/public/background-video/$id'
@@ -140,6 +150,7 @@ export interface FileRouteTypes {
     | '/admin'
     | '/wishes'
     | '/api/birthday-access'
+    | '/api/photo-wall-access'
     | '/p/$slug'
     | '/api/public/wishes'
     | '/api/public/background-video/$id'
@@ -153,6 +164,7 @@ export interface FileRouteTypes {
     | '/admin'
     | '/wishes'
     | '/api/birthday-access'
+    | '/api/photo-wall-access'
     | '/p/$slug'
     | '/api/public/wishes'
     | '/api/public/background-video/$id'
@@ -167,6 +179,7 @@ export interface RootRouteChildren {
   AdminRoute: typeof AdminRoute
   WishesRoute: typeof WishesRoute
   ApiBirthdayAccessRoute: typeof ApiBirthdayAccessRoute
+  ApiPhotoWallAccessRoute: typeof ApiPhotoWallAccessRoute
   PSlugRoute: typeof PSlugRoute
   ApiPublicWishesRoute: typeof ApiPublicWishesRoute
   ApiPublicBackgroundVideoIdRoute: typeof ApiPublicBackgroundVideoIdRoute
@@ -210,6 +223,13 @@ declare module '@tanstack/react-router' {
       path: '/api/birthday-access'
       fullPath: '/api/birthday-access'
       preLoaderRoute: typeof ApiBirthdayAccessRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/api/photo-wall-access': {
+      id: '/api/photo-wall-access'
+      path: '/api/photo-wall-access'
+      fullPath: '/api/photo-wall-access'
+      preLoaderRoute: typeof ApiPhotoWallAccessRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/p/$slug': {
@@ -263,6 +283,7 @@ const rootRouteChildren: RootRouteChildren = {
   AdminRoute: AdminRoute,
   WishesRoute: WishesRoute,
   ApiBirthdayAccessRoute: ApiBirthdayAccessRoute,
+  ApiPhotoWallAccessRoute: ApiPhotoWallAccessRoute,
   PSlugRoute: PSlugRoute,
   ApiPublicWishesRoute: ApiPublicWishesRoute,
   ApiPublicBackgroundVideoIdRoute: ApiPublicBackgroundVideoIdRoute,

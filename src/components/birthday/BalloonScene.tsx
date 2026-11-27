@@ -3,7 +3,36 @@ import { Environment, Lightformer } from "@react-three/drei";
 import { useMemo, useRef } from "react";
 import * as THREE from "three";
 
-const COLORS = ["#e2f3eb", "#3da783", "#f0c765", "#fff9f0", "#b5ddca", "#b77a32"];
+function readThemeColor(token: string, fallback: string) {
+  if (typeof document === "undefined") return fallback;
+  const themeRoot =
+    document.querySelector<HTMLElement>("[data-theme-root]") ?? document.documentElement;
+  return getComputedStyle(themeRoot).getPropertyValue(`--${token}`).trim() || fallback;
+}
+
+const COLORS = [
+  readThemeColor("mint", "#e2f3eb"),
+  readThemeColor("jade", "#3da783"),
+  readThemeColor("gold", "#f0c765"),
+  readThemeColor("cream", "#fff9f0"),
+  readThemeColor("mint-deep", "#b5ddca"),
+  readThemeColor("gold-deep", "#b77a32"),
+];
+let FOREST = readThemeColor("forest", "#174b3c");
+
+function refreshThemeColors() {
+  COLORS.splice(
+    0,
+    COLORS.length,
+    readThemeColor("mint", "#e2f3eb"),
+    readThemeColor("jade", "#3da783"),
+    readThemeColor("gold", "#f0c765"),
+    readThemeColor("cream", "#fff9f0"),
+    readThemeColor("mint-deep", "#b5ddca"),
+    readThemeColor("gold-deep", "#b77a32"),
+  );
+  FOREST = readThemeColor("forest", "#174b3c");
+}
 
 function RisingBalloon({ seed }: { seed: number }) {
   const ref = useRef<THREE.Group>(null);
@@ -17,7 +46,7 @@ function RisingBalloon({ seed }: { seed: number }) {
       scale: 0.55 + r(5) * 0.5,
       color: COLORS[seed % COLORS.length] ?? "#e2f3eb",
     };
-  }, [seed]);
+  }, [seed, COLORS.join("|")]);
 
   useFrame(({ clock, pointer }) => {
     const g = ref.current;
@@ -40,21 +69,28 @@ function RisingBalloon({ seed }: { seed: number }) {
       </mesh>
       <mesh position={[0, -1.5, 0]}>
         <cylinderGeometry args={[0.008, 0.008, 1.5, 4]} />
-        <meshStandardMaterial color="#fff9f0" />
+        <meshStandardMaterial color={readThemeColor("cream", "#fff9f0")} />
       </mesh>
     </group>
   );
 }
 
 export default function BalloonScene() {
+  refreshThemeColors();
   return (
     <Canvas dpr={[1, 1.5]} camera={{ position: [0, 0, 9], fov: 45 }} gl={{ alpha: true, antialias: true }}>
       <ambientLight intensity={1.1} />
-      <hemisphereLight args={["#fff9f0", "#174b3c", 0.8]} />
+      <hemisphereLight args={[readThemeColor("cream", "#fff9f0"), FOREST, 0.8]} />
       <directionalLight position={[4, 6, 5]} intensity={1.4} />
       <Environment resolution={128}>
         <Lightformer form="rect" intensity={2.2} position={[0, 5, -5]} scale={[10, 4, 1]} />
-        <Lightformer form="ring" intensity={1.6} color="#f0c765" position={[4, 2, 3]} scale={2} />
+        <Lightformer
+          form="ring"
+          intensity={1.6}
+          color={readThemeColor("gold", "#f0c765")}
+          position={[4, 2, 3]}
+          scale={2}
+        />
       </Environment>
       {Array.from({ length: 18 }, (_, i) => (
         <RisingBalloon key={i} seed={i + 1} />

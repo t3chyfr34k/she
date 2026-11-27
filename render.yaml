@@ -21,3 +21,5 @@ services:
         sync: false
       - key: BIRTHDAY_ACCESS_SECRET
         generateValue: true
+      - key: PHOTO_WALL_PASSCODE
+        sync: false

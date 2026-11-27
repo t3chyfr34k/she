@@ -6,6 +6,18 @@ import type { SiteContent } from "@/lib/site-content";
 
 const TOKEN_KEY = "birthday-admin-token";
 
+async function grantPhotoWallPreview(token: string) {
+  try {
+    await fetch("/api/photo-wall-access", {
+      method: "POST",
+      headers: { "content-type": "application/json" },
+      body: JSON.stringify({ adminToken: token }),
+    });
+  } catch {
+    // The editor remains usable if photo preview access cannot be refreshed.
+  }
+}
+
 export const Route = createFileRoute("/admin")({
   head: () => ({
     meta: [{ title: "Admin · Birthday page" }, { name: "robots", content: "noindex,nofollow" }],
@@ -30,6 +42,7 @@ function AdminPage() {
     void checkAdmin({ data: { token: stored } })
       .then(async ({ ok }) => {
         if (ok) {
+          await grantPhotoWallPreview(stored);
           const site = await getSiteContent({ data: { token: stored } });
           setContent(site.content);
           setToken(stored);
@@ -55,6 +68,7 @@ function AdminPage() {
       }
       sessionStorage.setItem(TOKEN_KEY, result.token);
       setToken(result.token);
+      await grantPhotoWallPreview(result.token);
       const site = await getSiteContent({ data: { token: result.token } });
       setContent(site.content);
       setPassword("");
@@ -79,11 +93,11 @@ function AdminPage() {
     );
   if (token && content)
     return (
-      <main className="min-h-screen bg-slate-50">
+      <main className="min-h-screen bg-mint text-forest">
         <div className="mx-auto flex max-w-5xl justify-end px-4 pt-4 sm:px-8">
           <button
             onClick={lock}
-            className="rounded-lg border px-3 py-2 text-sm font-semibold text-slate-700 hover:bg-white"
+            className="rounded-lg border border-forest/20 px-3 py-2 text-sm font-semibold text-forest hover:bg-cream"
           >
             Lock editor
           </button>
@@ -94,7 +108,7 @@ function AdminPage() {
 
   return (
     <main className="grid min-h-screen place-items-center bg-forest-deep px-4 py-10">
-      <form onSubmit={unlock} className="w-full max-w-sm rounded-2xl bg-white p-7 shadow-2xl">
+      <form onSubmit={unlock} className="w-full max-w-sm rounded-2xl bg-cream p-7 shadow-2xl">
         <p className="text-xs font-bold uppercase tracking-[0.2em] text-forest">Private editor</p>
         <h1 className="mt-2 text-2xl font-black text-forest-deep">Unlock admin</h1>
         <label htmlFor="admin-password" className="mt-6 block text-sm font-semibold text-slate-700">

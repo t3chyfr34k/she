@@ -4,6 +4,7 @@ import { z } from "zod";
 import { Binary, ObjectId } from "mongodb";
 import {
   DEFAULT_CONTENT,
+  normalizePalette,
   normalizeContent,
   referencedPhotoIds,
   siteContentSchema,
@@ -19,8 +20,15 @@ import {
 } from "./mongo.server";
 import { passwordMatches, signAdminToken, verifyAdminToken } from "./admin-token.server";
 import { hasBirthdayAccess } from "./birthday-access.server";
+import { isPhotoWallProtectionEnabled } from "./photo-wall-access.server";
 
 export type StoreStatus = "ok" | "not-configured" | "error";
+
+/** Return whether the configured MongoDB cluster requires a Photo Wall passcode. */
+export const getPhotoWallProtectionState = createServerFn({ method: "GET" }).handler(
+  async () => isPhotoWallProtectionEnabled(),
+);
+
 export type BirthdayWishSummary = {
   id: string;
   name: string;
@@ -73,6 +81,24 @@ const ALLOWED_TYPES = ["image/jpeg", "image/png", "image/webp", "image/gif"];
 const MAX_BACKGROUND_VIDEO_BYTES = 12 * 1024 * 1024;
 const ALLOWED_VIDEO_TYPES = ["video/mp4", "video/webm", "video/ogg"];
 const MAX_BIRTHDAY_AUDIO_BYTES = 15 * 1024 * 1024;
+
+/** Public: return only the site's color palette, so every route can share its saved theme. */
+export const getPublicPalette = createServerFn({ method: "GET" }).handler(async () => {
+  try {
+    return await withDb(async (db) => {
+      const doc = await db
+        .collection<ContentDoc>(CONTENT_COLLECTION)
+        .findOne({ _id: CONTENT_DOC_ID }, { projection: { "content.palette": 1 } });
+      const storedPalette =
+        doc?.content && typeof doc.content === "object"
+          ? (doc.content as { palette?: unknown }).palette
+          : undefined;
+      return normalizePalette(storedPalette ?? DEFAULT_CONTENT.palette);
+    });
+  } catch {
+    return DEFAULT_CONTENT.palette;
+  }
+});
 
 function requireAdmin(token: unknown) {
   if (!verifyAdminToken(token, process.env["SESSION_SECRET"])) {

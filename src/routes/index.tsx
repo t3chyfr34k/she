@@ -11,7 +11,7 @@ import { Finale } from "@/components/birthday/Finale";
 import { PhotoWall } from "@/components/birthday/PhotoWall";
 import { Letter } from "@/components/birthday/Letter";
 import { AmbientBackgroundVideo } from "@/components/birthday/AmbientBackgroundVideo";
-import { getBirthdayWishes, getSiteContent, type BirthdayWishSummary } from "@/lib/site.functions";
+import { getBirthdayWishes, getPhotoWallProtectionState, getSiteContent, type BirthdayWishSummary } from "@/lib/site.functions";
 import type { SiteContent } from "@/lib/site-content";
 import { SiteContentProvider } from "@/lib/site-content-context";
 import { StartupLoader } from "@/components/birthday/StartupLoader";
@@ -21,6 +21,7 @@ import { useEffect, useState, type FormEvent } from "react";
 type Search = { to?: string | undefined };
 
 export const Route = createFileRoute("/")({
+  loader: async () => ({ photoWallPasscodeRequired: await getPhotoWallProtectionState() }),
   // Personalise with ?to=Name
   validateSearch: (s: Record<string, unknown>): Search => ({
     to: typeof s["to"] === "string" && s["to"].trim() ? s["to"].trim().slice(0, 24) : undefined,
@@ -47,6 +48,7 @@ export const Route = createFileRoute("/")({
 
 function Index() {
   const { to } = Route.useSearch();
+  const { photoWallPasscodeRequired } = Route.useLoaderData();
   const [passcode, setPasscode] = useState("");
   const [content, setContent] = useState<SiteContent | null>(null);
   const [wishes, setWishes] = useState<BirthdayWishSummary[]>([]);
@@ -143,6 +145,7 @@ function Index() {
     <BirthdayContent
       content={content}
       wishes={wishes}
+      photoWallPasscodeRequired={photoWallPasscodeRequired}
       nameOverride={to}
       onSceneReady={() => setHeroReady(true)}
       heroReady={heroReady}
@@ -153,12 +156,14 @@ function Index() {
 function BirthdayContent({
   content,
   wishes,
+  photoWallPasscodeRequired,
   nameOverride,
   heroReady,
   onSceneReady,
 }: {
   content: SiteContent;
   wishes: BirthdayWishSummary[];
+  photoWallPasscodeRequired: boolean;
   nameOverride?: string | undefined;
   heroReady: boolean;
   onSceneReady: () => void;
@@ -173,7 +178,7 @@ function BirthdayContent({
         <Hero name={name} onSceneReady={onSceneReady} />
         <RibbonBand />
         <Memories name={name} />
-        <PhotoWall wall={content.wall} name={name} />
+        <PhotoWall wall={content.wall} name={name} requiresPasscode={photoWallPasscodeRequired} />
         <Letter />
         <WishWheel />
         <Statement />

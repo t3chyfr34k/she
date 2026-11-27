@@ -4,14 +4,17 @@ import {
   Link,
   createRootRouteWithContext,
   useRouter,
+  useRouterState,
   HeadContent,
   Scripts,
   type ErrorComponentProps,
 } from "@tanstack/react-router";
-import { useEffect, type ReactNode } from "react";
+import { useEffect, useState, type CSSProperties, type ReactNode } from "react";
 
 import appCss from "../styles.css?url";
 import { reportLovableError } from "../lib/lovable-error-reporting";
+import { getPublicPalette } from "../lib/site.functions";
+import { normalizePalette, paletteCssVariables, type ColorPalette } from "../lib/site-content";
 
 function NotFoundComponent() {
   return (
@@ -89,6 +92,7 @@ function getUserErrorMessage(error: unknown): string {
 }
 
 export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()({
+  loader: async () => ({ palette: await getPublicPalette() }),
   head: () => ({
     // Replace these placeholders with the app's name and description when first building the app.
     // Each content route, / included, must still set its own head(). Never add og:image or
@@ -146,6 +150,27 @@ function RootShell({ children }: { children: ReactNode }) {
 
 function RootComponent() {
   const { queryClient } = Route.useRouteContext();
+  const { palette } = Route.useLoaderData();
+  const [activePalette, setActivePalette] = useState<ColorPalette>(palette);
+  const pathname = useRouterState({ select: (state) => state.location.pathname });
+
+  useEffect(() => {
+    let current = true;
+    void getPublicPalette().then((nextPalette) => {
+      if (current) setActivePalette(nextPalette);
+    });
+    return () => {
+      current = false;
+    };
+  }, [pathname]);
+
+  useEffect(() => {
+    const updatePalette = (event: Event) => {
+      if (event instanceof CustomEvent) setActivePalette(normalizePalette(event.detail));
+    };
+    window.addEventListener("birthday-palette-change", updatePalette);
+    return () => window.removeEventListener("birthday-palette-change", updatePalette);
+  }, []);
 
   useEffect(() => {
     const openAdmin = (event: KeyboardEvent) => {
@@ -161,7 +186,13 @@ function RootComponent() {
   return (
     <QueryClientProvider client={queryClient}>
       {/* Required: nested routes render here. Removing <Outlet /> breaks all child routes. */}
-      <Outlet />
+      <div
+        data-theme-root
+        className="min-h-screen bg-mint text-forest"
+        style={paletteCssVariables(activePalette) as unknown as CSSProperties}
+      >
+        <Outlet />
+      </div>
     </QueryClientProvider>
   );
 }

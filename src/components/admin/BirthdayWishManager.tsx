@@ -16,7 +16,7 @@ type SubmittedWish = {
 };
 
 const inputClass =
-  "mt-1 w-full rounded-lg border border-forest-deep/20 bg-white px-3 py-2 text-sm text-slate-900 outline-none focus:border-forest focus:ring-2 focus:ring-forest/20";
+  "mt-1 w-full rounded-lg border border-forest-deep/20 bg-cream px-3 py-2 text-sm text-slate-900 outline-none focus:border-forest focus:ring-2 focus:ring-forest/20";
 
 export function BirthdayWishManager({ token }: { token: string }) {
   const [wishes, setWishes] = useState<SubmittedWish[]>([]);
@@ -85,7 +85,7 @@ export function BirthdayWishManager({ token }: { token: string }) {
   }
 
   return (
-    <section className="mb-6 rounded-2xl border bg-white p-4 shadow-sm sm:p-6">
+    <section className="mb-6 rounded-2xl border bg-cream p-4 shadow-sm sm:p-6">
       <div className="flex flex-wrap items-center justify-between gap-3">
         <div>
           <h2 className="text-lg font-bold text-slate-900">Submitted birthday wishes</h2>
@@ -115,7 +115,7 @@ export function BirthdayWishManager({ token }: { token: string }) {
       {loading ? (
         <p className="mt-5 text-sm text-slate-500">Loading wishes…</p>
       ) : wishes.length === 0 ? (
-        <p className="mt-5 rounded-xl bg-slate-50 p-5 text-center text-sm text-slate-600">
+        <p className="mt-5 rounded-xl bg-mint p-5 text-center text-sm text-slate-600">
           No one has submitted a wish yet.
         </p>
       ) : (
